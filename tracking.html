@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتبع المعاملة - نظام يوسف</title>
+    <link rel="stylesheet" href="tracking.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- ===== SPLASH SCREEN ===== -->
+<div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+        <div class="splash-logo">
+            <div class="splash-icon-ring"></div>
+            <div class="splash-icon-ring ring-2"></div>
+            <i class="fas fa-map-marked-alt splash-icon"></i>
+        </div>
+        <h2 class="splash-title">نظام يوسف</h2>
+        <p class="splash-subtitle">تعقيب المعاملات العقارية</p>
+        <div class="splash-bar-wrap">
+            <div class="splash-bar" id="splashBar"></div>
+        </div>
+        <span class="splash-loading">جاري التحميل...</span>
+    </div>
+    <div class="splash-particles" id="splashParticles"></div>
+</div>
+
+<!-- ===== BACKGROUND ELEMENTS ===== -->
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+<div class="stars" id="stars"></div>
+
+<!-- ===== CONFETTI CANVAS ===== -->
+<canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:9999;display:none;"></canvas>
+
+<!-- ===== COMPLETION MODAL ===== -->
+<div id="completionModal" class="completion-modal" style="display:none;">
+    <div class="completion-content">
+        <div class="completion-icon">
+            <i class="fas fa-check-circle"></i>
+            <div class="completion-ring"></div>
+        </div>
+        <h2 class="completion-title">🎉 تهانينا!</h2>
+        <p class="completion-text">تم إنجاز معاملتك بنجاح كامل</p>
+        <div class="completion-badge">
+            <i class="fas fa-star"></i> مكتملة 100%
+        </div>
+        <button class="completion-close" onclick="closeCompletionModal()">
+            <i class="fas fa-times"></i> إغلاق
+        </button>
+    </div>
+</div>
+
+<!-- ===== TOAST NOTIFICATION ===== -->
+<div id="toast" class="toast">
+    <i class="fas fa-check-circle toast-icon"></i>
+    <span id="toastMsg">تم النسخ!</span>
+</div>
+
+<!-- ===== THEME TOGGLE ===== -->
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" data-tooltip="تبديل الوضع">
+    <i class="fas fa-sun" id="themeIcon"></i>
+</button>
+
+<!-- ===== Header ===== -->
+<header class="tracking-header">
+    <div class="header-content">
+        <button class="back-btn" onclick="window.location.href='yousef.html'">
+            <i class="fas fa-arrow-right"></i>
+            <span>العودة</span>
+        </button>
+        <h1>
+            <i class="fas fa-map-marked-alt"></i>
+            تتبع المعاملة
+        </h1>
+        <div class="header-info">
+            <span class="customer-name" id="customerName">العميل</span>
+            <span class="separator">•</span>
+            <span class="service-type" id="serviceType">بيان قيد</span>
+            <!-- زر نسخ رقم المعاملة -->
+            <button class="copy-id-btn" id="copyIdBtn" onclick="copyTransactionId()" data-tooltip="نسخ رقم المعاملة">
+                <i class="fas fa-copy" id="copyIcon"></i>
+                <span id="txnId">#TXN-2026-0142</span>
+            </button>
+        </div>
+    </div>
+    <!-- آخر تحديث -->
+    <div class="last-update-bar">
+        <div class="live-dot"></div>
+        <span id="lastUpdateText">آخر تحديث: منذ لحظات</span>
+        <span class="update-divider">•</span>
+        <span id="currentDateTime"></span>
+    </div>
+</header>
+
+<!-- ===== Main Content ===== -->
+<div class="tracking-container">
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+        <div class="progress-header">
+            <div class="progress-info">
+                <h2>التقدم الكلي</h2>
+                <p class="progress-percentage" id="progressPercentage">0%</p>
+            </div>
+            <div class="progress-stats">
+                <div class="stat" data-tooltip="المراحل المنجزة">
+                    <span class="stat-value" id="completedSteps">0</span>
+                    <span class="stat-label">مكتمل</span>
+                </div>
+                <div class="stat" data-tooltip="إجمالي المراحل">
+                    <span class="stat-value" id="totalSteps">16</span>
+                    <span class="stat-label">إجمالي</span>
+                </div>
+                <div class="stat" data-tooltip="الوقت المتوقع للانتهاء">
+                    <span class="stat-value" id="etaDays">—</span>
+                    <span class="stat-label">يوم متبقي</span>
+                </div>
+            </div>
+        </div>
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <!-- Share Button -->
+        <button class="share-btn" onclick="shareStatus()" data-tooltip="مشاركة حالة المعاملة">
+            <i class="fas fa-share-alt"></i>
+            مشاركة الحالة
+        </button>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline">
+        <!-- المراحل ستُملأ من JavaScript -->
+    </div>
+
+    <!-- Admin Note (optional) -->
+    <div class="admin-note" id="adminNote" style="display: none;">
+        <div class="note-icon">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+        <div class="note-content">
+            <h3>ملاحظة من الإدارة</h3>
+            <p id="noteText"></p>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="contact-section">
+        <div class="contact-card">
+            <div class="contact-icon">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <div class="contact-info">
+                <h3>هل لديك استفسار؟</h3>
+                <p>تواصل معنا عبر الواتساب</p>
+            </div>
+            <a href="https://wa.me/963967728034" target="_blank" class="contact-btn">
+                <i class="fab fa-whatsapp"></i>
+                تواصل الآن
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="tracking-footer">
+    <p>© 2026 <span>Yousef Akddeh</span> - نظام تعقيب المعاملات العقارية</p>
+</footer>
+
+<script>
+/* ============================================
+   ✨ PREMIUM FEATURES SCRIPT
+   1. Splash Screen
+   2. Animated Counters
+   3. Confetti + Completion Modal
+   4. Copy Transaction ID
+   5. Live Update Timer
+   6. Tooltips
+   7. Share Status
+   8. Dark/Light Theme Toggle
+   9. Stars Generator
+============================================ */
+
+// ── 1. GENERATE STARS ──────────────────────
+(function generateStars() {
+    const container = document.getElementById('stars');
+    for (let i = 0; i < 80; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.cssText = `
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            --dur: ${2 + Math.random() * 4}s;
+            animation-delay: ${Math.random() * 5}s;
+            width: ${Math.random() > 0.8 ? 3 : 2}px;
+            height: ${Math.random() > 0.8 ? 3 : 2}px;
+        `;
+        container.appendChild(star);
+    }
+})();
+
+// ── 2. SPLASH SCREEN ──────────────────────
+(function initSplash() {
+    const splash = document.getElementById('splashScreen');
+    const bar = document.getElementById('splashBar');
+    const particles = document.getElementById('splashParticles');
+
+    // Generate splash particles
+    for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'splash-particle';
+        p.style.cssText = `
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation-delay: ${Math.random() * 2}s;
+            animation-duration: ${3 + Math.random() * 3}s;
+            width: ${2 + Math.random() * 4}px;
+            height: ${2 + Math.random() * 4}px;
+            opacity: ${0.2 + Math.random() * 0.5};
+        `;
+        particles.appendChild(p);
+    }
+
+    // Animate bar
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 18 + 5;
+        if (progress >= 100) { progress = 100; clearInterval(interval); }
+        bar.style.width = progress + '%';
+    }, 120);
+
+    // Hide after 2.2s
+    setTimeout(() => {
+        splash.classList.add('splash-exit');
+        setTimeout(() => {
+            splash.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 600);
+    }, 2200);
+
+    document.body.style.overflow = 'hidden';
+})();
+
+// ── 3. ANIMATED COUNTER ──────────────────
+function animateCounter(el, target, duration = 1500, suffix = '') {
+    const start = performance.now();
+    const from = 0;
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+    function step(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const value = Math.round(from + (target - from) * easeOut(progress));
+        el.textContent = value + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
+// ── 4. LIVE DATE/TIME ─────────────────────
+function updateDateTime() {
+    const el = document.getElementById('currentDateTime');
+    const now = new Date();
+    const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    el.textContent = now.toLocaleDateString('ar-SY', opts);
+}
+updateDateTime();
+setInterval(updateDateTime, 60000);
+
+// Live "last update" counter
+let secondsSinceUpdate = 0;
+setInterval(() => {
+    secondsSinceUpdate++;
+    const el = document.getElementById('lastUpdateText');
+    if (secondsSinceUpdate < 60) {
+        el.textContent = `آخر تحديث: منذ ${secondsSinceUpdate} ثانية`;
+    } else if (secondsSinceUpdate < 3600) {
+        const m = Math.floor(secondsSinceUpdate / 60);
+        el.textContent = `آخر تحديث: منذ ${m} دقيقة`;
+    } else {
+        const h = Math.floor(secondsSinceUpdate / 3600);
+        el.textContent = `آخر تحديث: منذ ${h} ساعة`;
+    }
+}, 1000);
+
+// ── 5. COPY TRANSACTION ID ────────────────
+function copyTransactionId() {
+    const txnId = document.getElementById('txnId').textContent;
+    navigator.clipboard.writeText(txnId).catch(() => {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = txnId;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    });
+
+    const icon = document.getElementById('copyIcon');
+    const btn = document.getElementById('copyIdBtn');
+    icon.className = 'fas fa-check';
+    btn.classList.add('copied');
+    showToast('✅ تم نسخ رقم المعاملة!');
+
+    setTimeout(() => {
+        icon.className = 'fas fa-copy';
+        btn.classList.remove('copied');
+    }, 2000);
+}
+
+// ── 6. TOAST NOTIFICATION ─────────────────
+function showToast(msg, duration = 3000) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+// ── 7. SHARE STATUS ───────────────────────
+function shareStatus() {
+    const name = document.getElementById('customerName').textContent;
+    const service = document.getElementById('serviceType').textContent;
+    const pct = document.getElementById('progressPercentage').textContent;
+    const txn = document.getElementById('txnId').textContent;
+    const text = `📋 تتبع معاملة\n👤 العميل: ${name}\n📌 الخدمة: ${service}\n📊 التقدم: ${pct}\n🔖 الرقم: ${txn}\n\n🔗 نظام يوسف للتعقيب العقاري`;
+
+    if (navigator.share) {
+        navigator.share({ title: 'حالة المعاملة', text }).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(text).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        });
+        showToast('📋 تم نسخ تفاصيل المعاملة!');
+    }
+}
+
+// ── 8. CONFETTI ───────────────────────────
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    canvas.style.display = 'block';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = [];
+    const colors = ['#6c63ff','#00d4ff','#ff6b9d','#ffb547','#00e676','#fff'];
+
+    for (let i = 0; i < 200; i++) {
+        pieces.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            r: Math.random() * 6 + 3,
+            d: Math.random() * 200,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            tilt: Math.random() * 10 - 10,
+            tiltAngle: 0,
+            tiltAngleIncrement: Math.random() * 0.07 + 0.05,
+            shape: Math.random() > 0.5 ? 'circle' : 'rect',
+        });
+    }
+
+    let angle = 0, tick = 0;
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        angle += 0.01;
+        tick++;
+        pieces.forEach((p, i) => {
+            ctx.beginPath();
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = 0.85;
+            p.tiltAngle += p.tiltAngleIncrement;
+            p.y += (Math.cos(angle + p.d) + 2 + p.r / 2) * 1.5;
+            p.x += Math.sin(angle) * 1.5;
+            p.tilt = Math.sin(p.tiltAngle) * 12;
+            if (p.shape === 'circle') {
+                ctx.arc(p.x + p.tilt, p.y, p.r, 0, Math.PI * 2);
+            } else {
+                ctx.rect(p.x + p.tilt, p.y, p.r, p.r * 2);
+            }
+            ctx.fill();
+            if (p.y > canvas.height) {
+                pieces[i].y = -20;
+                pieces[i].x = Math.random() * canvas.width;
+            }
+        });
+        if (tick < 300) requestAnimationFrame(draw);
+        else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.style.display = 'none';
+        }
+    }
+    draw();
+}
+
+function showCompletionModal() {
+    const modal = document.getElementById('completionModal');
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+    setTimeout(launchConfetti, 300);
+}
+function closeCompletionModal() {
+    const modal = document.getElementById('completionModal');
+    modal.style.display = 'none';
+    modal.classList.remove('active');
+}
+
+// ── 9. THEME TOGGLE ───────────────────────
+let isLight = false;
+function toggleTheme() {
+    isLight = !isLight;
+    document.body.classList.toggle('light-theme', isLight);
+    document.getElementById('themeIcon').className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    showToast(isLight ? '☀️ الوضع الفاتح' : '🌙 الوضع الداكن', 1800);
+}
+// Load saved theme
+if (localStorage.getItem('theme') === 'light') {
+    isLight = true;
+    document.body.classList.add('light-theme');
+    document.getElementById('themeIcon').className = 'fas fa-moon';
+}
+
+// ── 10. PROGRESS UPDATE HOOK ─────────────
+window.updateProgressUI = function(completed, total) {
+    const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    // Animated counter للنسبة
+    const pctEl = document.getElementById('progressPercentage');
+    const dur = 1600;
+    const startTime = performance.now();
+    function animPct(now) {
+        const t = Math.min((now - startTime) / dur, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        pctEl.textContent = Math.round(ease * pct) + '%';
+        if (t < 1) requestAnimationFrame(animPct);
+    }
+    requestAnimationFrame(animPct);
+
+    // Animated counters للأرقام
+    animateCounter(document.getElementById('completedSteps'), completed, 1400);
+
+    // ETA
+    const remaining = total - completed;
+    const eta = document.getElementById('etaDays');
+    if (eta) {
+        if (remaining > 0) animateCounter(eta, remaining * 3, 1200);
+        else eta.textContent = '✓';
+    }
+
+    // Progress bar
+    setTimeout(() => {
+        const bar = document.getElementById('progressBar');
+        if (bar) bar.style.width = pct + '%';
+    }, 200);
+
+    // 🎊 الاحتفال عند الاكتمال — فقط مرة واحدة في الجلسة
+    if (pct === 100 && !sessionStorage.getItem('celebrationShown')) {
+        sessionStorage.setItem('celebrationShown', '1');
+        // ننتظر حتى بعد انتهاء الـ splash screen (2.5s) + تأخير إضافي
+        setTimeout(showCompletionModal, 3200);
+    }
+};
+</script>
+
+<!-- tracking.js يُحمَّل أخيراً بعد تعريف كل الدوال أعلاه -->
+<script src="tracking.js"></script>
+
+</body>
+</html>

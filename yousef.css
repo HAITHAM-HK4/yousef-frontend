@@ -1,0 +1,1452 @@
+body {
+    
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* تأمين ارتفاع كامل للشاشة */
+    display: flex;
+    flex-direction: row-reverse; /* اللوحة يمين والشعار يسار */
+    align-items: flex-start;        /* توسيط عمودي للشعار واللوحة مع بعض */
+    justify-content: center;   /* توسيط أفقي للمجموعة كاملة */
+    gap: 40px;                 /* المسافة بين الشعار واللوحة (تحكم بها كما تريد) */
+    font-family: 'Segoe UI', sans-serif;
+    background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("city.png") !important;
+    background-size: cover;
+    background-position: center;
+    background-attachment: scroll;
+    overflow-y: visible !important;
+    min-width: 1400px;
+    
+}
+/* تلوين اسم المعاملة فقط بالأزرق الغامق */
+#transaction-name {
+    color: #0d47a1 !important; /* الأزرق الغامق */
+    font-weight: 900 !important; /* سماكة الخط */
+    margin-right: 8px; /* مسافة بسيطة من كلمة معاملة */
+    display: inline-block;
+}
+
+.container {
+    background: rgba(255 255,255,0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    margin: 40px auto;
+    max-width: 500px;
+    margin-right: 20px;
+    margin-left: auto;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px(0,0,0,0,1);
+    border: 1px solid #dddddd;
+    position: relative;
+    width: 450px;
+    
+}
+.input-group {
+    margin-bottom: 15px;
+    text-align: right;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #09ff00;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+#transaction-price {
+    color: #ff0000 !important; /* أحمر فاقع */
+    font-weight: 900 !important; /* عريض جداً */
+    font-size: 1.2em;
+    display: inline-block;
+    vertical-align: middle;
+}
+/* تنسيق الأزرار داخل الحاوية tabs */
+.tabs button {
+    background-color: rgba(211, 37, 37, 0.15) !important; /* أخضر شفاف */
+    border: 2px solid #25D366 !important; /* إطار أخضر واتساب */
+    color: white !important;
+    padding: 10px 20px !important;
+    margin: 5px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3) !important; /* ظل أخضر ثابت */
+    font-weight: 800 !important; /* سماكة الكلمات */
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+/* تأثير التعبئة الكاملة عند مرور الماوس */
+.tabs button:hover {
+    background-color: #25D366 !important;
+    color: #f5f2f2 !important;
+    box-shadow: 0 0 25px rgba(37, 211, 102, 0.7) !important;
+    transform: translateY(-3px) !important;
+}
+/* تنسيق الكلاس الجديد الموحد */
+.btn-yousef-action {
+    background: linear-gradient(45deg, #00d2ff, #3a7bd5) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 30px !important;
+    border-radius: 50px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    display: block !important;
+    margin: 20px auto !important;
+    box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4) !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    width: 200px !important;
+    text-align: center !important;
+    position: relative !important;
+    z-index: 999 !important;
+    text-decoration: none !important;
+}
+
+/* تأثير التمرير (Hover) للكلاس الجديد */
+.btn-yousef-action:hover {
+    transform: scale(1.1) translateY(-5px) !important; /* تكبير ورفع */
+    box-shadow: 0 0 30px #00d2ff, 0 0 10px rgba(0, 210, 255, 0.6) !important; /* توهج */
+    filter: brightness(1.2) !important; /* تفتيح اللون */
+    background: linear-gradient(45deg, #3a7bd5, #00d2ff) !important; /* عكس التدرج */
+}
+
+/* تأثير الضغط للواقعية */
+.btn-yousef-action:active {
+    transform: scale(0.95) !important;
+}
+.form-card {
+    background: rgb(255, 255, 255);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 255, 68, 0.801);
+}
+
+.input-group {
+    text-align: right;
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #005eff;
+    border-radius: 5px;
+    box-sizing: border-box; /* لضمان عدم خروج المدخلات عن الحاشية */
+}
+.logo-wrapper{
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+.top-logo{
+    width: 150px;
+    height: auto;
+    border-radius: 30px;
+}
+
+.side-logo {
+    position: fixed !important;
+    top: -20px !important;    /* لرفعها للأعلى */
+    left: 650px !important;  /* لإزاحتها لليمين بجانب اللوحة */
+    width: 180px !important; /* حجم الشعار */
+    height: auto;
+    z-index: 9999;
+   filter: 
+        drop-shadow(2px 2px 0px rgb(40, 39, 39)) 
+        drop-shadow(4px 4px 4px rgb(12, 12, 12)) 
+        drop-shadow(1px 1px 0px rgb(31, 31, 31)) !important;
+
+    /* تمهيد الحركة */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+/* رفرفة أجنحة هادئة وأبطأ */
+/* 1. أنميشن الرفرفة: جعلناه 1.5 ثانية ليكون بطيئاً وهادئاً */
+/* طبقة العزل: تأخذ مساحة صفرية لكي لا تزيح أي شيء */
+.eagles-isolation-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: 99999; /* أعلى من كل شيء */
+    pointer-events: none; /* تجعل الفأرة تمر من خلالها */
+}
+
+/* النسر القديم: التحكم في الحجم والموقع دون التأثير على الصفحة */
+.old-Eagle {
+    position: fixed !important;
+    top: -100px !important;
+    left: 650px !important;
+    width: 150px !important; /* تحكم في الحجم هنا كما تريد */
+    height: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
+    mix-blend-mode: overlay; 
+    
+    /* 2. تأثير الحفر العميق باستخدام فلاتر متعددة */
+    filter: 
+        brightness(0.7)       /* جعل النسر أغمق لأنه في الداخل */
+        contrast(1.5)         /* إبراز الحواف المحفورة */
+        drop-shadow(-2px -2px 1px rgba(0,0,0,0.7))  /* ظل الحافة الداخلية العلوية */
+        drop-shadow(1px 1px 1px rgba(255,255,255,0.2)); /* لمعة الحافة السفلية الخارجة */
+
+    /* 3. تنعيم الحواف لتبدو منحوتة يدوياً */
+    transition: all 0.5s ease;
+} /* لضمان عدم تأثره بأنيميشن قديم */
+
+
+/* النسر الجديد: يبدأ ضخماً ومنتصف الشاشة */
+
+.new-eagle {
+    position: fixed !important;
+    top: -10px !important;
+    left: 650px !important;
+    width: 160px !important;
+    z-index: 9999;
+    opacity: 0;
+}
+
+/* 1. أنميشن الظهور الذهبي */
+@keyframes deepReveal {
+    0% {
+        opacity: 0;
+        transform: scale(1.2);
+        filter: brightness(3) blur(5px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: 
+            sepia(1) 
+            saturate(15) 
+            brightness(1.1) 
+            contrast(1.4) 
+            hue-rotate(10deg)
+            drop-shadow(1px 1px 0px #ffe44d) 
+            drop-shadow(-2px -2px 2px #3d3100);
+    }
+}
+
+/* 2. أنميشن الرفرفة */
+@keyframes wingFlap {
+    0%, 100% { transform: scale(1) scaleX(1); }
+    50% { transform: scale(1) scaleX(0.9); } /* حركة الجناح */
+}
+
+/* 3. تفعيل الحركتين معاً */
+.attack-mode .new-eagle {
+    /* هنا ندمج الحركتين: الظهور أولاً، ثم الرفرفة تبدأ بعد 3 ثوانٍ بشكل مستمر */
+    animation: 
+        deepReveal 3s ease-out forwards, 
+        wingFlap 2s infinite ease-in-out 3s; 
+}
+
+.attack-mode .old-Eagle {
+    /* القديم لا يزحط، بل يذوب ويختفي في مكانه */
+    opacity: 0 !important;
+    filter: blur(10px) brightness(1.5) !important;
+    transition: all 2.1s ease-in-out !important;
+}
+
+/* الأنيميشنات الأساسية */
+@keyframes swoopAttack {
+    100% { top: 30px; left: 650px; transform: translate(0, 0) scale(1); opacity: 1; }
+}
+@keyframes wingFlap {
+    0%, 100% { transform: scaleX(1); }
+    50% { transform: scaleX(0.85); }
+}
+
+.side-logo:hover {
+    transform: scale(1.02) translateY(-5px);
+    filter: 
+        drop-shadow(2px 2px 0px #ffffff)
+        drop-shadow(10px 10px 15px rgba(0,0,0,0.4));
+        transform: scale(1.05);
+}
+.side-logo img{
+    filter: drop-shadow(0 0 10px rgba(255,255,0.8));
+    transition: transform 0.3s ease;
+}
+* {
+    margin: 10;
+    padding-right: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #151515;
+    --clr: #c0c0c0;
+    --clr2: #835326;
+    --shadow: #b57b46;
+    overflow: hidden;
+}
+
+
+.card {
+    position: relative;
+    width: 300px;
+    height: 350px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+    transition-delay: 0.5s;
+    
+    
+}
+
+.card:hover {
+    width: 600px;
+    transition-delay: 0.5s;
+}
+
+.card .circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card .circle::before {
+    content: "";
+    position: absolute;
+    top: 30;
+    left: 2;
+    right: 2;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: #191919;
+    border: 8px solid var(--clr);
+    transition: 0.5s, background 0.5s;
+    transition-delay: 0.75s, 1s;
+    filter: drop-shadow(0 0 10px var(--shadow))
+        drop-shadow(0 0 60px var(--shadow));
+}
+
+.card:hover .circle::before {
+    transition-delay: 0.5s;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: var(--clr2);
+    border: 8px solid var(--clr2);
+}
+
+.card .circle .logo {
+    position: relative;
+    width: 250px;
+    transition: 0.5s;
+    transition-delay: 0.5s;
+}
+
+.card:hover .circle .logo {
+    transform: scale(0);
+    transition-delay: 0s;
+}
+
+.card .product_img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0) rotate(315deg);
+    height: 300px;
+    transition: 0.5s ease-in-out;
+}
+
+
+
+.card .content {
+    position: absolute;
+    width: 40%;
+    left: 20%;
+    padding: 20px 20px 20px 20px;
+    opacity: 0;
+    transition: 0.5s;
+    visibility: hidden;
+    
+}
+
+.card:hover .content {
+    transition-delay: 0.75s;
+    opacity: 1;
+    visibility: visible;
+    left: 20px;
+}
+
+.card .content h2 {
+    color: #fbff00 !important;
+    font-weight: 900 !important;
+    position: absolute;
+    top: -20px !important;
+    left: -5px !important;
+    margin: 0;
+    text-align: left;
+    white-space: nowrap;
+    z-index: 100 !important;
+
+    /* الحل السحري: تكبير العنصر بالكامل */
+    display: inline-block !important;
+    transform: scale(1.3) !important; /* ارفع الرقم 2.5 لتكبير أكبر */
+    transform-origin: top left; /* لضمان أن التكبير يبدأ من الزاوية وليس المركز */
+}
+
+.card .content p {
+    color: #fff;
+}
+
+.card .content a {
+    position: relative;
+    color: #fff;
+    background: #b87333 ;
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 10px;
+}
+/* التأثير عند مرور الماوس */
+.card .content a:hover {
+    background-color: #00ff0d !important; /* يتحول لون الخلفية للأزرق */
+    color: #fff !important;               /* يتحول لون النص للأبيض */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4) !important; /* ظل أقوى ليعطي عمق */
+    transform: translateY(-5px) !important; /* يرتفع الزر للأعلى قليلاً */
+}
+.card .content a {
+    position: absolute !important;
+    bottom: 25px !important;
+    left: 20px !important;
+
+    /* 1. جعل الخلفية شفافة أو بيضاء حسب رغبتك */
+    background-color: transparent !important; 
+    
+    /* 2. الإطار الأخضر الاحترافي */
+    border: 3.0px solid #25D366 !important; 
+    
+    /* 3. لون النص يتبع لون الإطار ليصبح متناسقاً */
+    color: #25D366 !important; 
+    
+    /* 4. الظل الأخضر الخارجي الاحترافي */
+    box-shadow: 2 15px 25px rgba(0, 0, 0, 0.3) !important;
+
+    /* تنسيقات الخط والحواف */
+    padding: 8px 20px !important;
+    border-radius: 12px !important;
+    text-decoration: none !important;
+    font-weight: 900 !important;
+    display: inline-block !important;
+    z-index: 100 !important;
+    margin: 0 !important;
+    top: auto !important;
+}
+
+/* إضافة نعومة في الانتقال (ضعه داخل الكلاس الأصلي للزر) */
+
+
+.card .content p {
+    color: #fff;
+    font-size: 1.5em !important;
+    line-height: 1.4;
+    /* السطرين القادمين هما المطلوبين للسمك والوضوح */
+    font-weight: 1900 !important; 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+:root{
+    --clr-main: #2196f3;
+    --clr-bg: #835326;
+    --shadow-clr: rgba(33,150,243,0.5)
+}
+.card{
+    position: relative;
+    width: 300px;
+    height: 350px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+    transition-delay: 0.2s;
+    cursor: pointer;
+    
+}
+.card:hover{
+    width: 600px;
+}
+.card .circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1 ;
+}
+
+.card .circle::before {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: transparent;
+    
+    background: rgba(25, 25, 25, 0.8);
+    border: 5px solid #2196f3;
+    transition: 0.5s;
+    filter: drop-shadow(0 0 15px var(--shadow-clr));
+}
+
+/* تحول الدائرة لمستطيل عند الـ Hover */
+.card:hover .circle::before {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: rgba(33, 150, 243, 0.9)
+}
+
+.card .circle .logo {
+    position: absolute;
+    width: 150px; /* حجم شعار YA */
+    height: 150px;
+    border-radius: 50%;
+    object-fit: contain;
+    transition: 0.5s;
+    z-index: 2 ;
+    border: 2px solid rgb(255, 255, 255);
+    transform: scale(2.6);
+}
+
+/* اختفاء شعار YA عند التمدد */
+.card:hover .circle .logo {
+    transform:translateX(-150px): scale(0.8);
+}
+
+.card .content {
+    position: absolute;
+    width: 50%;
+    right: 10%;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.5s;
+    text-align: right; /* لتناسب اللغة العربية */
+    direction: rtl;
+    z-index: 3;
+}
+
+.card:hover .content {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0.4s;
+}
+
+.card .content h2 {
+    color: #fff;
+    font-size: 1.8em !important;
+    font-weight: 900 !important;
+    /* التحويل للزاوية العليا اليسارية */
+    position: absolute;
+    top: -20px;
+    left: -5px;
+    text-align: left;
+    margin: 0;
+    line-height: 1em;
+    width: fit-content;
+}
+
+.card .content p {
+    color: #fff;
+    font-size: 1.1em;
+    line-height: 1.4;
+}
+.card .content a {
+    /* 1. تثبيت الموقع بشكل مطلق */
+    position: absolute !important;
+    
+    /* 2. تحريك الزر للأسفل واليسار */
+    bottom: -45px !important;  /* المسافة من أسفل الكارت */
+    left: -18px !important;    /* المسافة من يسار الكارت */
+    
+    /* 3. إلغاء أي قيود قديمة تمنع الحركة */
+    margin: 0 !important;
+    top: auto !important;
+    right: auto !important;
+    
+    /* 4. تصميم الزر كما في الصورة */
+    display: inline-block !important;
+    padding: 8px 20px !important;
+    background-color: #fff !important;
+    color: #2196f3 !important;
+    border-radius: 10px !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    
+    /* 5. التأكد من ظهوره فوق العناصر الأخرى */
+    z-index: 100 !important;
+    
+    /* لضمان عدم تمدد الزر */
+    width: fit-content !important;
+}
+.circle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    transition: all 0.4s ease;
+    margin: 0 auto;
+}
+.white-circle {
+    position: absolute !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    /* قمت بتصغير القطر ليكون ملموماً حول الشعار */
+    width: 160px; 
+    height: 160px;
+    
+    background: rgb(255, 255, 255);
+    border-radius: 50%;
+    /* الإطار الأزرق المحيط بالبياض */
+    border: 4px solid #2196f3; 
+    
+    /* تأكد أنها في الخلف */
+    z-index: 1; 
+    transition: 0.5s ease-in-out;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transition: all 0.4s ease !important; /* سرعة استجابة التأثير */
+    cursor: pointer !important;
+    border: 2px solid transparent !important; /* حواف شفافة في البداية */
+    pointer-events: none;
+}
+
+/* التأثير على الحواف عند وضع الفارة (Hover) */
+.white-circle:hover {
+    /* تغيير لون الحافة وتوهجها */
+    border-color: #2196f3 ;  
+    box-shadow: 0 0 15px #2196f3, inset 0 0 10px rgba(0, 210, 255, 0.2) !important;
+    
+    /* حركة نبض خفيفة جداً للحواف */
+    transform: scale(1.05) !important;
+}
+    
+
+
+.logo {
+    position: absolute;
+    width: 200px; /* مساحة افتراضية للشعار */
+    height: 200px;
+    
+    /* المقاس الضخم الذي اخترته 2.6 */
+    /* بما أن الشعار "أخ" للدائرة، فلن يؤثر على حجمها */
+    transform: scale(2.6); 
+    
+    object-fit: contain;
+    /* تأكد أن الشعار فوق الدائرة البيضاء */
+    z-index: 2; 
+    transition: 0.5s ease-in-out;
+}
+.card:hover .white-circle {
+    /* الدائرة البيضاء تتمدد لتصبح خلفية للبطاقة بالكامل */
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: #2196f3;
+    border-color: #ffffff !important; /* حافة بيضاء */
+    box-shadow: 0 0 15px #00d2ff, 0 0 30px rgba(0, 210, 255, 0.6) !important; /* توهج سماوي */
+}
+.card:hover img[alt="YA Logo"] {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.5));
+    transition: all 0.4s ease;
+    width: 100%; /* اجعل الشعار يملأ الحاوية */
+    height: auto;
+    z-index: 1; /* خلف التوهج قليلاً أو تحته */
+    transition: transform 0.4s ease;
+    display: block;
+}
+card:hover .logo {
+    /* تصغير الشعار قليلاً وانزياحه لليسار عند ظهور النصوص */
+    transform: translateX(-160px) scale(1.1);
+}
+.product_img {
+    width: 200px !important;
+    height: 200px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    position: absolute !important;
+    z-index: 999 !important;
+    border: 4px solid rgb(177, 164, 164) !important;
+    box-shadow: 0 0 25px rgba(0, 162, 255, 0.8) !important;
+
+    /* مخفي في البداية */
+    opacity: 0 !important;
+    top: 50px !important;
+    left: 150% !important;
+    transform: translate(-50%, 0) !important;
+    
+    /* حركة ناعمة */
+    transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    cursor: pointer !important;
+}
+.product_img:hover {
+    opacity: 1 !important;
+    left: 50% !important;
+    top: -220px !important;
+    transform: translate(-50%, 0) scale(1.05) !important;
+    box-shadow: 0 0 35px rgba(0, 162, 255, 1) !important;
+    animation: breathe 2s ease-in-out infinite !important;
+}
+
+/* أنيميشن التنفس */
+@keyframes breathe {
+    0%, 100% {
+        transform: translate(-50%, 0) scale(1.05);
+    }
+    50% {
+        transform: translate(-50%, -15px) scale(1.08);
+    }
+}
+
+/* عند تمرير الفأرة: الدخول المستقر */
+.card:hover .product_img {
+    opacity: 1 !important;
+    left: 50% !important;   /* يستقر في المنتصف */
+    top: -220px !important;  /* يستقر فوق الكارت */
+    
+    /* تشغيل أنيميشن التنفس فقط (بدون العودة لليمين) */
+   animation: constant_breathe 3s linear infinite !important;
+   will-change: transform , top;
+}
+
+@keyframes constant_breathe {
+    0%, 100% {
+        margin-top: 0px;
+        transform: translate(-50%, 0) translateZ(0); /* التوسيط + تنعيم الحواف */
+    }
+    50% {
+        margin-top: -20px;
+        transform: translate(-50%, 0) translateZ(0);
+    }
+}
+.personal-img {
+    position: absolute; /* ضروري لكي نتحكم بمكانها بدقة */
+    top: -50px !important;          /* المسافة من الأعلى */
+    right: -430px !important;        /* المسافة من اليمين (عكس الاسم تماماً) */
+    width: 390px !important;        /* حجم الصورة (يمكنك تكبيره لـ 120px لو أردت) */
+    height: 290px !important;
+               /* لكي لا يظهر وجهك "مضغوطاً" */
+    border-radius: 40% !important;
+    
+
+}
+.pay-btn {
+    background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 15px;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+}
+/* خلفية شاشة التحميل التي تغطي الصفحة */
+#loader-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8); /* خلفية سوداء شفافة */
+    display: none; /* مخفية في البداية */
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 10000; /* لتكون فوق كل شيء */
+    backdrop-filter: blur(5px);
+}
+
+/* شكل الدائرة المتحركة */
+.loader {
+    width: 60px;
+    height: 60px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #00d2ff; /* اللون السماوي الخاص بك */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* نص "جاري المعالجة" */
+.loader-text {
+    color: white;
+    margin-top: 20px;
+    font-family: sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* تنسيق اختياري لإبراز الخطأ في المدخلات */
+input:invalid {
+    border: 2px solid #ff0000 !important;
+}
+
+/* حركة اهتزاز بسيطة للزر عند وجود خطأ */
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+/* تأثير الظل الأحمر المتوهج للرسالة */
+.my-danger-alert {
+    box-shadow: 0 0 30px rgba(209, 49, 49, 0.649) !important; /* ظل أحمر خارجي */
+    border: 1px solid rgba(227, 53, 53, 0.385) !important; /* إطار أحمر خفيف جداً */
+    border-radius: 20px !important; /* جعل حواف الرسالة دائرية باحترافية */
+}
+
+/* إضافة أنيميشن بسيط (اهتزاز خفيف) للرسالة عند ظهورها */
+.my-danger-alert.swal2-show {
+    animation: alert-shake 0.4s ease-in-out !important;
+}
+
+@keyframes alert-shake {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.02); }
+    50% { transform: scale(0.98); }
+    
+}
+/* تأثير الظل الأصفر المتوهج لرسائل تنبيه البيانات */
+.my-warning-alert {
+    box-shadow: 0 0 30px rgba(255, 204, 0, 0.6) !important; /* ظل أصفر ذهبي */
+    border: 2px solid rgba(255, 204, 0, 0.4) !important; /* إطار أصفر خفيف */
+    border-radius: 15px !important;
+}
+
+/* تغيير لون أيقونة التحذير ليتناسب مع التصميم */
+.my-warning-alert .swal2-warning {
+    border-color: #ffcc00 !important;
+    color: #ffcc00 !important;
+}
+
+/* حركة دخول مختلفة (انزلاق من الأعلى) لتمييزها عن الرسالة الحمراء */
+.my-warning-alert.swal2-show {
+    animation: slide-down 0.5s ease-out !important;
+}
+
+@keyframes slide-down {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+/* أضف هذا الكود في آخر ملف yousef.css تماماً */
+
+@media screen and (max-width: 480px) {
+    body {
+        /* إلغاء العرض الثابت فوراً ليناسب الموبايل */
+        min-width: auto !important; 
+        
+        /* جعل العناصر تترتب عمودياً (فوق بعض) */
+        display: flex !important;
+        flex-direction: column !important; 
+        
+        /* توسيط العناصر في المنتصف */
+        align-items: center !important;
+        justify-content: flex-start !important;
+        
+        /* السماح بالسحب (Scroll) وإضافة مسافات مريحة */
+        padding: 40px 10px !important;
+        gap: 20px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+
+        /* إصلاح خلفية الصور المكررة */
+        background-size: cover !important;
+        background-attachment: fixed !important;
+        background-position: center !important;
+    }
+@media screen and (max-width: 480px) {
+    /* 1. إجبار الحاوية الأم على ترتيبهم عمودياً */
+    .eagles-isolation-layer {
+        display: flex !important;
+        flex-direction: column !important; /* نسر فوق نسر */
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        gap: 15px !important; /* مسافة بين النسور */
+        margin-bottom: 20px !important;
+    }
+
+    /* 2. التحكم في النسر القديم */
+   /* استهداف النسر القديم عن طريق اسم الملف نفسه لضمان الوصول إليه */
+img[src*="YA.png"], 
+img[src*="YA_B.png"],
+.old-eagle {
+    position: relative !important;
+    display: block !important;
+    margin: 0 auto 20px auto !important; /* توسيط إجباري */
+    width: 130px !important;
+    height: auto !important;
+    top: 350px!important;
+    left: 150px !important;
+    right: 0 !important;
+    transform: none !important;
+    z-index: 9999 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+    /* 3. التحكم في النسر الجديد */
+    .new-eagle {
+        position: relative !important; /* إلغاء أي absolute قديم */
+        top: 100px !important;
+        left: 150px !important;
+        right: auto !important;
+        width: 150px !important;
+        height: auto !important;
+        display: block !important;
+        filter: drop-shadow(0 0 8px var(--shadow)) !important;
+    }
+}
+    /* تنسيق الحاويات والبطاقات */
+    .container, .card {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 15px auto !important;
+        text-align: center !important;
+    }
+
+    /* تصغير حجم الخطوط */
+    h1, h2, .title {
+        font-size: 1.2rem !important;
+    }
+} 
+@media screen and (max-width: 480px) {
+    .card {
+        /* 1. التحكم في ارتفاع الكارت */
+        height: 550px !important; /* غير هذا الرقم لزيادة أو تقليل الارتفاع */
+        
+        /* 2. التحكم في مكان الكارت من أعلى الشاشة */
+        margin-top: 20px !important; 
+        
+        /* 3. لضمان توزيع العناصر داخل الارتفاع الجديد */
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-around !important; /* يوزع العناصر بمسافات متساوية عمودياً */
+        
+        /* إضافات لضبط الشكل */
+        width: 95% !important;
+        padding: 15px !important;
+    }
+
+    /* إذا أردت التحكم في ارتفاع الصورة الشخصية تحديداً */
+    .personal-img {
+        height: 370px !important; 
+        width: 450px !important;
+        margin-top: 50px !important;
+    }
+}
+social-footer {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(10,15,30,0.95));
+    border-top: 1px solid rgba(0, 210, 255, 0.15);
+    padding: 25px 20px 15px;
+}
+
+.footer-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.footer-title {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.footer-line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #00d2ff, transparent);
+    margin: 0 auto 20px;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.social-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 20px;
+    border-radius: 16px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    min-width: 90px;
+}
+
+.icon-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.icon-wrap svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* فيسبوك */
+.social-btn.facebook { color: #4e88f5; }
+.social-btn.facebook .icon-wrap {
+    background: rgba(70, 132, 247, 0.288);
+    border: 1px solid rgba(78,136,245,0.3);
+}
+.social-btn.facebook:hover {
+    background: rgba(64, 126, 240, 0.315);
+    border-color: rgba(78,136,245,0.5);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(60, 123, 242, 0.25);
+}
+.social-btn.facebook:hover .icon-wrap {
+    background: #4e88f5;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* انستغرام */
+.social-btn.instagram { color: #e1306c; }
+.social-btn.instagram .icon-wrap {
+    background: rgba(228, 45, 106, 0.474);
+    border: 1px solid rgba(225, 48, 107, 0.363);
+}
+.social-btn.instagram:hover {
+    background: rgba(225,48,108,0.12);
+    border-color: rgba(225,48,108,0.5);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(225,48,108,0.25);
+}
+.social-btn.instagram:hover .icon-wrap {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* هاتف */
+.social-btn.phone { color: #25d366; }
+.social-btn.phone .icon-wrap {
+    background: rgba(37,211,102,0.15);
+    border: 1px solid rgba(37,211,102,0.3);
+}
+.social-btn.phone:hover {
+    background: rgba(37, 211, 101, 0.344);
+    border-color: rgba(37,211,102,0.5);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(37, 211, 101, 0.423);
+}
+.social-btn.phone:hover .icon-wrap {
+    background: #25d366;
+    color: white;
+    transform: scale(1.1);
+}
+
+.footer-copy {
+    color: rgba(255,255,255,0.2);
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin: 0;
+}
+urgency-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.urgency-btn {
+    padding: 10px 30px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* زر عادي */
+.urgency-btn.normal {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    color: white;
+}
+.urgency-btn.normal.active {
+    background: #25d366; /* أخضر عند التفعيل */
+    border-color: #25d366;
+    color: white;
+    box-shadow: 0 0 20px rgba(37,211,102,0.5);
+}
+
+/* زر مستعجل */
+.urgency-btn.urgent {
+    background: rgba(255,100,0,0.1);
+    border-color: rgba(255,100,0,0.4);
+    color: #ff6400;
+}
+.urgency-btn.urgent.active {
+    background: #ff6400; /* برتقالي عند التفعيل */
+    border-color: #ff6400;
+    color: white;
+    box-shadow: 0 0 20px rgba(255,100,0,0.6);
+    animation: pulse-urgent 1.5s infinite; /* نبض متكرر */
+}
+
+@keyframes pulse-urgent {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,100,0,0.6); }
+    50%       { box-shadow: 0 0 35px rgba(255,100,0,0.9); }
+}
+.theme-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px; /* أعلى يسار الشاشة */
+    z-index: 99999;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1) rotate(20deg);
+    background: rgba(255,255,255,0.2);
+}
+
+/* الوضع النهاري */
+body.light-mode {
+    filter: invert(1) hue-rotate(180deg); /* يقلب الألوان للفاتح */
+}
+
+/* استثناء الصور من الانقلاب */
+body.light-mode img,
+body.light-mode video {
+    filter: invert(1) hue-rotate(180deg);
+}
+.welcome-overlay {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome-box {
+    background: linear-gradient(135deg, #0d1117, #161b22);
+    border: 1px solid rgba(0,210,255,0.3);
+    border-radius: 25px;
+    padding: 45px 40px;
+    text-align: center;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 0 60px rgba(0,210,255,0.15);
+    animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+
+.welcome-icon {
+    font-size: 60px;
+    margin-bottom: 15px;
+}
+
+.welcome-title {
+    color: #00d2ff;
+    font-size: 24px;
+    margin-bottom: 10px;
+    font-family: sans-serif;
+}
+
+.welcome-text {
+    color: rgba(255,255,255,0.7);
+    font-size: 15px;
+    line-height: 1.8;
+    font-family: sans-serif;
+    margin-bottom: 25px;
+}
+
+.welcome-line {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00d2ff, transparent);
+    margin: 0 auto 25px;
+}
+
+.welcome-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.w-icon {
+    text-align: center;
+}
+
+.w-icon div {
+    font-size: 22px;
+}
+
+.w-icon span {
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+.welcome-btn {
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+    border: none;
+    color: white;
+    padding: 13px 50px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0,210,255,0.3);
+}
+
+.welcome-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,210,255,0.5);
+}
+
+@keyframes popIn {
+    0%   { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; transform: scale(0.9); }
+}
+@keyframes fadeOut {
+    to { opacity: 0; transform: scale(0.9); } /* تصغر وتختفي */
+}
+.tabs {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 25px !important;
+    justify-content: center !important;
+}
+
+/* تنسيق الأزرار */
+.tabs button {
+    background-color: rgba(211, 37, 37, 0.15) !important;
+    border: 2px solid #25D366 !important;
+    color: white !important;
+    padding: 12px 15px !important;
+    margin: 0 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3) !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-size: 15px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    min-height: 45px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.tabs button:hover {
+    background-color: #25D366 !important;
+    color: #f5f2f2 !important;
+    box-shadow: 0 0 25px rgba(37, 211, 102, 0.7) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+}
+
+/* للشاشات الكبيرة - 4 أزرار في الصف */
+@media screen and (min-width: 1200px) {
+    .tabs {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+
+/* للشاشات المتوسطة - 3 أزرار في الصف */
+@media screen and (max-width: 1199px) and (min-width: 768px) {
+    .tabs {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* للموبايل - زرين في الصف */
+@media screen and (max-width: 767px) {
+    .tabs {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+    
+    .tabs button {
+        font-size: 13px !important;
+        padding: 10px 8px !important;
+        min-height: 40px !important;
+    }
+}
+
+/* للشاشات الصغيرة جداً - زر واحد في الصف */
+@media screen and (max-width: 480px) {
+    .tabs {
+        grid-template-columns: 1fr !important;
+    }
+}
+/* زر التتبع العائم */
+.track-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    transition: 0.3s;
+    font-weight: bold;
+}
+
+.track-btn:hover { transform: scale(1.1); }
+
+/* نافذة الخريطة */
+.tracking-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 2000;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.tracking-content {
+    background: #1a1a1a;
+    max-width: 800px;
+    margin: 50px auto;
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    border: 1px solid #333;
+}
+
+.map-title { color: #96c93d; text-align: center; margin-bottom: 40px; }
+
+/* الخريطة (الخطوات) */
+.stepper-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    opacity: 0.4; /* الخطوات التي لم تبدأ تكون باهتة */
+    transition: 0.5s;
+}
+
+.step.active { opacity: 1; transform: translateX(-10px); }
+.step.completed { opacity: 0.8; color: #96c93d; }
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    background: #333;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #555;
+}
+
+.active .step-icon { background: #96c93d; border-color: #fff; box-shadow: 0 0 15px #96c93d; }
+
+.close-tracking {
+    position: absolute;
+    top: 20px; left: 20px;
+    font-size: 30px; color: white; cursor: pointer;
+}

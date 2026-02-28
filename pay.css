@@ -1,0 +1,662 @@
+/* إعدادات الصفحة العامة */
+body {
+    background: #0b0f19;
+    /* إضافة طبقة الخلفية الرسمية */
+    background-image: 
+        /* أختام دائرية خفيفة في الزوايا */
+        radial-gradient(circle at 10% 15%, rgba(139, 0, 0, 0.08) 0%, transparent 8%),
+        radial-gradient(circle at 90% 15%, rgba(0, 100, 0, 0.08) 0%, transparent 8%),
+        radial-gradient(circle at 10% 85%, rgba(0, 0, 139, 0.08) 0%, transparent 8%),
+        radial-gradient(circle at 90% 85%, rgba(139, 69, 0, 0.08) 0%, transparent 8%),
+        
+        /* ختم كبير في المنتصف */
+        radial-gradient(circle at 50% 50%, rgba(139, 0, 0, 0.04) 0%, rgba(139, 0, 0, 0.02) 15%, transparent 25%),
+        
+        /* خطوط أفقية تشبه الوثائق */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 35px,
+            rgba(0, 210, 255, 0.03) 35px,
+            rgba(0, 210, 255, 0.03) 36px
+        ),
+        
+        /* الخلفية الأساسية */
+        linear-gradient(135deg, #0b0f19 0%, #1a1f2e 100%);
+    
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow-y: auto;
+    position: relative;
+    padding: 20px;
+}
+
+/* حاوية الدفع الرئيسية - مع علامة مائية */
+.pay-container {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 40px;
+    border-radius: 25px;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 210, 255, 0.2);
+    width: 700px;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    box-sizing: border-box;
+    overflow: hidden; /* مهم لإخفاء العلامة المائية خارج الحدود */
+}
+
+/* علامة مائية داخل الحاوية */
+.pay-container::after {
+    content: "معتمد ومصدق\Aوزارة المالية";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    font-size: 70px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.02);
+    white-space: pre;
+    text-align: center;
+    line-height: 1.5;
+    z-index: 0;
+    pointer-events: none;
+    letter-spacing: 8px;
+    font-family: 'Arial', sans-serif;
+}
+
+/* تأثير توهج الحواف */
+.pay-container::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #00d2ff, transparent, #3a7bd5);
+    z-index: -1;
+    animation: border-glow 3s infinite alternate;
+}
+
+@keyframes border-glow {
+    0% { opacity: 0.3; filter: blur(5px); }
+    100% { opacity: 0.8; filter: blur(15px); }
+}
+
+h1 {
+    font-size: 24px;
+    color: #00d2ff;
+    margin-bottom: 10px;
+}
+
+.description {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 30px;
+}
+
+/* صندوق تفاصيل المعاملة */
+.details-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: right;
+}
+
+/* إصلاح المحاذاة والخط الفاصل */
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* لضمان استقامة النص يميناً ويساراً */
+    margin-bottom: 15px;
+    font-size: 15px;
+    padding: 10px 0;
+    /* تم إصلاح الخطأ الإملائي في rgba هنا ليعمل الخط الفاصل */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.total {
+    
+    padding-top: 15px;
+    font-weight: bold;
+    color: #00d2ff;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* زر ادفع الآن - بنفس تأثيراتك */
+.pay-btn {
+    background: linear-gradient(135deg, #28a745, #218838) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 0 !important;
+    width: 100% !important;
+    border-radius: 8px !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3) !important;
+    margin-top: 20px !important;
+    display: block !important;
+}
+
+.pay-btn:hover {
+    background: linear-gradient(135deg, #2ecc71, #28a745) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 8px 25px rgba(46, 204, 113, 0.5) !important;
+    letter-spacing: 1px !important;
+}
+
+.pay-btn:active {
+    transform: translateY(1px) !important;
+}
+
+/* زر الإلغاء - بنفس تأثيراتك */
+.btn-cancel {
+    background: #f44336 !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 25px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease-in-out !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+    margin: 20px auto 0 auto !important; /* لضمان التوسيط أسفل الزر الأخضر */
+    display: block !important;
+    width: fit-content !important;
+}
+
+.btn-cancel:hover {
+    background: #d32f2f !important;
+    transform: scale(1.05) translateY(-2px) !important;
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.5) !important;
+}
+.payment-modal {
+    display: none; /* مخفية حتى يتم الضغط على ادفع */
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #161b22;
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid #00d2ff;
+    text-align: center;
+    width: 550px;
+    max-width: 90%;
+    
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.option-card {
+    flex: 1;
+    padding: 25px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.option-card:hover {
+    border-color: #00d2ff;
+    background: rgba(0, 210, 255, 0.1);
+    transform: translateY(-5px);
+}
+
+.option-card span { display: block; margin-top: 10px; font-size: 14px; 
+
+}
+.option-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    filter: drop-shadow(0,4px,8px rgba(0,0,0,0.3)); /* الصور ستظهر أبيض وأسود في البداية */
+    transition: 0.4s ease;
+    margin-bottom: 15px;
+}
+
+.option-card:hover img {
+    transform: scale(1.15) rotate(1deg); /* حركة تفاعلية عند تمرير الماوس */
+}
+
+.payment-options {
+    display: grid; /* استخدام grid لترتيب أفضل لـ 3 عناصر */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 25px 0;
+}
+/* تنسيق زر الإلغاء الاحترافي */
+.close-modal {
+    background: rgba(97, 4, 4, 0.21) !important; /* خلفية شفافة جداً */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important; /* إطار خفيف جداً */
+    color: #94a3b8 !important; /* لون نص رمادي هادئ */
+    padding: 12px 30px !important;
+    border-radius: 12px !important; /* زوايا مستديرة ناعمة */
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important; /* حركة ناعمة */
+    margin-top: 20px !important;
+    width: 100% !important; /* ليأخذ عرض الحاوية */
+}
+
+/* التأثير عند تمرير الماوس (Hover) */
+.close-modal:hover {
+    background: rgba(239, 68, 68, 0.1) !important; /* توهج أحمر خفيف جداً */
+    border-color: rgba(239, 68, 68, 0.4) !important; /* تلوين الإطار بالأحمر */
+    color: #ef4444 !important; /* تحويل النص للأحمر التحذيري */
+    letter-spacing: 1px; /* حركة تباعد بسيطة للحروف تعطي طابعاً عصرياً */
+}
+@media only screen and (max-width: 480px) {
+    .modal-content {
+        width: 95% !important;
+    }
+}
+@media only screen and (max-width: 480px) {
+    .modal-content {
+        width: 95% !important;
+    }
+}
+@media only screen and (max-width: 480px) {
+    /* كود الحاوية التي حددتها أنت في الصورة */
+    .payment-options {
+        display: grid !important;
+        grid-template-columns: 1fr !important; /* عمود واحد بدلاً من ثلاثة */
+        gap: 15px !important; /* مسافة بين المربعات */
+        width: 100% !important;
+        padding: 10px !important;
+    }
+
+    /* كود المربعات نفسها لتصبح عريضة */
+    .option-card {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0px !important;
+    }
+}
+@media only screen and (max-width: 480px) {
+    /* 1. قائمة الخيارات (القائمة الأولى) */
+    .payment-options {
+        display: grid !important;
+        grid-template-columns: 1fr !important; /* عمود واحد */
+        gap: 11px !important;
+        width: 100% !important;
+        padding: 10px !important;
+    }
+
+    /* 2. لوحة التأكيد (التي تظهر بعد الضغط) */
+    .modal-content {
+        /* العرض الذي تريده */
+        width: 100% !important;
+        max-width: 100% !important;
+        
+        /* التوسيط ومنع القطش */
+        margin: 200px auto !important;
+        padding: 100px !important;
+        
+        /* السحر هنا: لا تضع display: flex هنا */
+        height: auto !important; 
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
+    /* 3. الحاوية الكبرى للمودال */
+    .payment-modal {
+        overflow-y: auto !important; /* للسماح بالسحب لرؤية زر الغاء */
+        -webkit-overflow-scrolling: touch;
+    }
+}
+/* تنسيق الواجهة الشفافة التي تظهر فوق الموقع */
+#truckOverlay {
+    display: none; /* مخفي افتراضياً */
+    font-family: 'Inter', Arial, sans-serif;
+}
+
+/* الكود الأساسي لتحويل الزر لشاحنة */
+.truck-button {
+  --color: #fff;
+  --background: #2B3044;
+  --tick: #16BF78;
+  --base: #0D0F18;
+  --wheel: #2B3044;
+  --wheel-inner: #646B8C;
+  --wheel-dot: #fff;
+  --back: #6D58FF;
+  --back-inner: #362A89;
+  --back-inner-shadow: #2D246B;
+  --front: #A6ACCD;
+  --front-shadow: #535A79;
+  --front-light: #FFF8B1;
+  --window: #2B3044;
+  --window-shadow: #404660;
+  --street: #646B8C;
+  --street-fill: #404660;
+  --box: #DCB97A;
+  --box-shadow: #B89B66;
+  
+  padding: 12px 0;
+  width: 172px;
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  border: none;
+  outline: none;
+  color: var(--color);
+  background: var(--background);
+  border-radius: 15px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) translateZ(0);
+  transition: transform 0.5s, border-radius 0.3s linear;
+}
+
+/* حركة قلب الزر */
+.truck-button.animation {
+  --rx: -90deg;
+  border-radius: 0;
+}
+
+/* جسم الشاحنة */
+.truck-button .truck {
+  position: absolute;
+  width: 72px;
+  height: 28px;
+  left: 50%;
+  margin-left: -36px;
+  bottom: 12px;
+  transform-style: preserve-3d;
+  transform: rotateX(90deg) translate3d(var(--truck-x, 4px), calc(var(--truck-y-n, -26) * 1px), 12px);
+}
+
+.truck-button .truck:before, .truck-button .truck:after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: var(--l, 18px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow: inset 0 0 0 2px var(--wheel), inset 0 0 0 4px var(--wheel-inner);
+  background: var(--wheel-dot);
+}
+
+.truck-button .truck:after { --l: 54px; }
+
+.truck-button .truck .back {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 47px;
+  height: 28px;
+  background: var(--back);
+  border-radius: 1px;
+}
+
+.truck-button .truck .front {
+  position: absolute;
+  left: 47px;
+  bottom: -1px;
+  height: 22px;
+  width: 24px;
+  background: var(--front);
+  clip-path: polygon(55% 0, 72% 44%, 100% 58%, 100% 100%, 0 100%, 0 0);
+}
+
+.truck-button .truck .box {
+  width: 13px;
+  height: 13px;
+  right: 56px;
+  bottom: 0;
+  z-index: 1;
+  border-radius: 1px;
+  position: absolute;
+  transform: translate(calc(var(--box-x, -24) * 1px), calc(var(--box-y, -6) * 1px)) scale(var(--box-s, 0.5));
+  opacity: var(--box-o, 0);
+  background: var(--box);
+}
+
+.truck-button .default, .truck-button .success {
+  display: block;
+  font-weight: 500;
+  font-size: 14px;
+  opacity: var(--o, 1);
+  transition: opacity 0.3s;
+}
+
+.truck-button .success {
+  --o: 0;
+  position: absolute;
+  top: 12px;
+  left: 0;
+  right: 0;
+}
+
+.truck-button.animation.done .success { --o: 1; }
+.truck-button.animation.done .default { --o: 0; }
+.swal2-popup {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(25px) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6) !important;
+}
+
+.swal2-title {
+    color: #00d2ff !important;
+    text-shadow: 2px 2px 15px rgba(0, 210, 255, 0.5) !important;
+}
+
+.swal2-html-container p, .swal2-html-container b {
+    color: white !important;
+    text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.5) !important;
+}
+
+.swal2-input {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 2px solid rgba(0, 210, 255, 0.4) !important;
+    color: white !important;
+}
+.swal2-html-container > div > div[style*="background: #f8f9fa"] {
+    background: linear-gradient(135deg, 
+        rgba(0, 210, 255, 0.15) 0%, 
+        rgba(58, 123, 213, 0.15) 100%) !important;
+    border: 2px solid rgba(0, 210, 255, 0.5) !important;
+    border-radius: 15px !important;
+    padding: 20px !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(0, 210, 255, 0.3),
+        inset 0 0 20px rgba(0, 210, 255, 0.1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* تأثير توهج متحرك خلف المربع */
+.swal2-html-container > div > div[style*="background: #f8f9fa"]::before {
+    content: "" !important;
+    position: absolute !important;
+    top: -50% !important;
+    left: -50% !important;
+    width: 200% !important;
+    height: 200% !important;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(0, 210, 255, 0.1),
+        transparent
+    ) !important;
+    animation: shine 3s infinite !important;
+}
+
+@keyframes shine {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* تنسيق الرقم داخل المربع */
+.swal2-html-container b[style*="font-size: 20px"] {
+    color: #00d2ff !important;
+    text-shadow: 
+        0 0 10px rgba(0, 210, 255, 0.6),
+        0 0 20px rgba(0, 210, 255, 0.4),
+        2px 2px 5px rgba(0, 0, 0, 0.5) !important;
+    font-size: 22px !important;
+    letter-spacing: 2px !important;
+    font-weight: 900 !important;
+}
+
+/* زر النسخ داخل المربع */
+.swal2-html-container button[onclick*="copyToClipboard"] {
+    background: linear-gradient(45deg, #00d2ff, #3a7bd5) !important;
+    border: none !important;
+    color: white !important;
+    padding: 10px 25px !important;
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4) !important;
+}
+
+.swal2-html-container button[onclick*="copyText"]:hover {
+    transform: scale(1.05) translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 210, 255, 0.6) !important;
+}
+
+/* مربع QR Code */
+.swal2-html-container img[alt="QR Code"] {
+    border: 3px solid rgba(0, 210, 255, 0.6) !important;
+    border-radius: 15px !important;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(0, 210, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 10px !important;
+}
+@media screen and (max-width: 768px) {
+    body {
+        padding: 15px;
+        overflow-y: auto !important;
+        align-items: flex-start !important;
+    }
+
+    .pay-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 20px 15px !important;
+        margin: 10px auto !important;
+        border-radius: 15px !important;
+    }
+
+    h1 {
+        font-size: 18px !important;
+    }
+
+    .description {
+        font-size: 12px !important;
+    }
+
+    .detail-item {
+        font-size: 13px !important;
+        flex-direction: row !important;
+        gap: 5px !important;
+    }
+
+    .total {
+        font-size: 15px !important;
+    }
+
+    .pay-btn {
+        font-size: 16px !important;
+        padding: 12px !important;
+    }
+
+    /* نافذة الدفع */
+    .payment-modal {
+        padding: 10px !important;
+        align-items: flex-start !important;
+        overflow-y: auto !important;
+    }
+
+    .modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 20px 15px !important;
+        margin: 20px auto !important;
+        border-radius: 15px !important;
+    }
+
+    .modal-content h3 {
+        font-size: 16px !important;
+    }
+
+    /* خيارات الدفع الثلاثة */
+    .payment-options {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+
+    .option-card {
+        padding: 0px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 15px !important;
+    }
+
+    .option-card img {
+        width: 50px !important;
+        height: 50px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .option-card span {
+        font-size: 16px !important;
+        margin-top: 0 !important;
+    }
+
+    .close-modal {
+        margin-top: 10px !important;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .pay-container {
+        padding: 15px 10px !important;
+    }
+
+    .detail-item {
+        font-size: 12px !important;
+    }
+
+    h1 {
+        font-size: 16px !important;
+    }
+}
+
+
