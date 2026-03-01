@@ -119,7 +119,7 @@ if ((regNo !== '' && !regex.test(regNo)) || (propNo !== '' && !regex.test(propNo
     if (loader) loader.style.display = 'flex';
     setTimeout(() => {
         if (loader) loader.style.display = 'none';
-        window.location.href = 'pay.html';
+        window.location.href = '/pay.html';
     }, 2000);
 }
 
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ===== زر الأدمن المخفي =====
-function goAdmin() { window.location.href = 'login.html'; }
+function goAdmin() { window.location.href = '/login.html'; }
 
 // ===== الوضع الليلي/النهاري =====
 function toggleTheme() {
