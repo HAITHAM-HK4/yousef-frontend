@@ -76,22 +76,18 @@
             <i class="fas fa-map-marked-alt"></i>
             تتبع المعاملة
         </h1>
-
-<!-- بعد - ضع هذا بدلاً منه -->
-<div class="header-info">
-    <div class="search-box" style="display:flex; gap:10px; align-items:center;">
-        <input 
-            type="text" 
-            id="propertySearch" 
-            placeholder="أدخل رقم العقار (مثال: 345 أو 345/2)"
-            oninput="this.value=this.value.replace(/[^0-9\/]/g,'')"
-            style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); border-radius:10px; padding:8px 15px; color:white; font-size:14px; width:260px; outline:none; text-align:right;"
-        >
-        <button onclick="searchByProperty()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5); border:none; color:white; padding:8px 18px; border-radius:10px; cursor:pointer; font-size:14px;">
-            🔍 بحث
-        </button>
-    </div>
-</div>
+        <div class="header-info">
+            <div style="display:flex;gap:8px;align-items:center;">
+                <input type="text" id="propertySearchInput"
+                    placeholder="أدخل رقم العقار للتتبع"
+                    oninput="this.value=this.value.replace(/[^0-9/]/g,'')"
+                    style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:7px 14px;color:white;font-size:14px;width:200px;outline:none;text-align:right;">
+                <button onclick="searchTracking()"
+                    style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;color:white;padding:7px 16px;border-radius:10px;cursor:pointer;font-size:14px;">
+                    🔍 تتبع
+                </button>
+            </div>
+        </div>
     </div>
     <!-- آخر تحديث -->
     <div class="last-update-bar">
@@ -477,6 +473,113 @@ window.updateProgressUI = function(completed, total) {
 
 <!-- tracking.js يُحمَّل أخيراً بعد تعريف كل الدوال أعلاه -->
 <script src="tracking.js"></script>
+
+
+<div id="searchOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:center;">
+    <div style="background:#0d1117;border:1px solid rgba(0,210,255,0.3);border-radius:20px;padding:35px;text-align:center;max-width:350px;width:90%;">
+        <h2 style="color:#00d2ff;margin-bottom:8px;">🔍 تتبع معاملتك</h2>
+        <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:20px;">أدخل رقم العقار لمعرفة مرحلة معاملتك</p>
+        <input type="text" id="overlayInput"
+            placeholder="مثال: 345 أو 345/2"
+            oninput="this.value=this.value.replace(/[^0-9/]/g,'')"
+            style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(0,210,255,0.3);border-radius:10px;padding:12px 15px;color:white;font-size:15px;outline:none;text-align:center;margin-bottom:15px;">
+        <button onclick="doSearch()"
+            style="width:100%;background:linear-gradient(135deg,#00d2ff,#3a7bd5);border:none;color:white;padding:12px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:bold;margin-bottom:10px;">
+            بحث 🚀
+        </button>
+        <div id="searchError" style="color:#ff5555;font-size:13px;display:none;margin-top:5px;"></div>
+    </div>
+</div>
+
+<script>
+const TRACK_BACKEND = 'https://yousef-backend-production-fa63.up.railway.app';
+
+const STEP_DETAILS = [
+    { title:'تسجيل ديوان المالية',    description:'تسجيل المعاملة في السجلات الرسمية لديوان المالية', icon:'📝' },
+    { title:'إيرادات المالية',         description:'مراجعة وتدقيق الإيرادات المالية المتعلقة بالمعاملة', icon:'💰' },
+    { title:'دخل مقطوع',              description:'احتساب وتحديد الدخل المقطوع للمعاملة', icon:'📊' },
+    { title:'أرباح حقيقية',           description:'تقييم ومراجعة الأرباح الحقيقية من المعاملة', icon:'💹' },
+    { title:'قصر تصرف',               description:'التحقق من عدم وجود قيود على التصرف بالعقار', icon:'🔒' },
+    { title:'البصمة مالياً',           description:'التحقق من البصمة المالية والسجل الضريبي', icon:'👆' },
+    { title:'موافقة أمنية',           description:'الحصول على الموافقة الأمنية اللازمة', icon:'🛡️' },
+    { title:'دراسة المراقب',           description:'مراجعة ودراسة المعاملة من قبل المراقب المختص', icon:'🔍' },
+    { title:'ضريبة البيوع',            description:'احتساب ودفع ضريبة البيوع المستحقة', icon:'💳' },
+    { title:'تدقيق رئيس الشعبة',      description:'التدقيق النهائي من قبل رئيس الشعبة', icon:'✅' },
+    { title:'جباية الذمة',            description:'التحقق من سداد جميع الالتزامات المالية', icon:'📋' },
+    { title:'طباعة العقد',            description:'إعداد وطباعة وثيقة العقد الرسمية', icon:'🖨️' },
+    { title:'دراسة توثيق رئيس الشعبة',description:'مراجعة وثيقة العقد من قبل رئيس الشعبة', icon:'📌' },
+    { title:'تصحيح المعاملة',         description:'مراجعة وتصحيح أي أخطاء في المعاملة', icon:'✏️' },
+    { title:'ضريبة البيوع عقارياً',   description:'تسوية ضريبة البيوع العقارية النهائية', icon:'🏛️' },
+    { title:'البصمة عقارياً',         description:'التوثيق النهائي والبصمة في السجل العقاري', icon:'🏠' },
+];
+
+// عند فتح الصفحة — أظهر overlay للبحث
+window.addEventListener('load', () => {
+    const saved = sessionStorage.getItem('trackingPropNo');
+    if (saved) {
+        loadFromBackend(saved);
+    } else {
+        document.getElementById('searchOverlay').style.display = 'flex';
+    }
+});
+
+function searchTracking() {
+    document.getElementById('searchOverlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('overlayInput').focus(), 100);
+}
+
+async function doSearch() {
+    const val = document.getElementById('overlayInput').value.trim();
+    const errEl = document.getElementById('searchError');
+    errEl.style.display = 'none';
+
+    if (!val) { errEl.textContent = 'يرجى إدخال رقم العقار'; errEl.style.display = 'block'; return; }
+    const regex = /^[0-9]+(\/[0-9]+)?$/;
+    if (!regex.test(val)) { errEl.textContent = 'أرقام فقط مثل 345 أو 345/2'; errEl.style.display = 'block'; return; }
+
+    await loadFromBackend(val);
+}
+
+async function loadFromBackend(propNo) {
+    try {
+        const res  = await fetch(`${TRACK_BACKEND}/tracking/${encodeURIComponent(propNo)}`);
+        const data = await res.json();
+
+        if (!data.found) {
+            const errEl = document.getElementById('searchError');
+            errEl.textContent = 'لم يتم العثور على معاملة بهذا الرقم';
+            errEl.style.display = 'block';
+            document.getElementById('searchOverlay').style.display = 'flex';
+            return;
+        }
+
+        sessionStorage.setItem('trackingPropNo', propNo);
+        document.getElementById('searchOverlay').style.display = 'none';
+
+        // حقن البيانات في trackingSteps
+        const backendSteps = data.steps;
+        backendSteps.forEach(bs => {
+            const found = trackingSteps.find(s => s.id === bs.id);
+            if (found) {
+                found.status = bs.status;
+                found.date   = bs.date;
+            }
+        });
+
+        renderTimeline();
+        updateProgress();
+
+        // تحديث العنوان
+        const lastUpdate = document.getElementById('lastUpdateText');
+        if (lastUpdate) lastUpdate.textContent = `رقم العقار: ${propNo}`;
+
+    } catch(e) {
+        const errEl = document.getElementById('searchError');
+        if (errEl) { errEl.textContent = 'خطأ في الاتصال بالسيرفر'; errEl.style.display = 'block'; }
+        document.getElementById('searchOverlay').style.display = 'flex';
+    }
+}
+</script>
 
 </body>
 </html>
