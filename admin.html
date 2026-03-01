@@ -211,7 +211,7 @@ add-service-form {
 // ==============================
 async function updateStats() {
     try {
-        const res = await fetch('https://yousef-backend-production-fa63.up.railway.app/stats');
+        const res = await fetch('https://yousef-backend-production.up.railway.app/stats');
         const data = await res.json();
         document.getElementById('totalOrders').innerText  = data.total;
         document.getElementById('todayOrders').innerText  = data.today;
@@ -227,7 +227,7 @@ async function updateStats() {
 // ==============================
 async function loadOrders() {
     try {
-     const res = await fetch('https://yousef-backend-production-fa63.up.railway.app/orders');
+     const res = await fetch('https://yousef-backend-production.up.railway.app/orders');
         const orders = await res.json();
         const tbody = document.getElementById('ordersTable');
 
@@ -273,7 +273,7 @@ async function deleteOrder(id) {
         color: 'white'
     }).then(async r => {
         if (r.isConfirmed) {
-       const res = await fetch('https://yousef-backend-production-fa63.up.railway.app/orders/' + id, { method: 'DELETE' });
+       const res = await fetch('https://yousef-backend-production.up.railway.app/orders/' + id, { method: 'DELETE' });
             const result = await res.json();
             if (result.success) {
                 loadOrders();
@@ -289,7 +289,7 @@ async function deleteOrder(id) {
 // ==============================
 async function loadServices() {
     try {
-const res = await fetch('https://yousef-backend-production-fa63.up.railway.app/services');
+const res = await fetch('https://yousef-backend-production.up.railway.app/services');
         const services = await res.json();
         
         // حفظ نسخة احتياطية في متصفحك أنت
@@ -380,7 +380,7 @@ async function savePrice(id, type) {
     }
 
     // جلب القيم الحالية أولاً
-const res = await fetch('https://yousef-backend-production-fa63.up.railway.app/services');
+const res = await fetch('https://yousef-backend-production.up.railway.app/services');
     const services = await res.json();
     const service = services.find(s => s.id === id);
     if (!service) return;
@@ -392,17 +392,17 @@ const res = await fetch('https://yousef-backend-production-fa63.up.railway.app/s
         visible: service.visible
     };
 
-    await fetch('https://yousef-backend-production-fa63.up.railway.app/services/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    await fetch('https://yousef-backend-production.up.railway.app/services/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     Swal.fire({ icon: 'success', title: 'تم حفظ السعر ✅', timer: 1200, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
 }
 
 async function toggleService(id, currentVisible) {
-const res = await fetch('https://yousef-backend-production-fa63.up.railway.app/stats');
+const res = await fetch('https://yousef-backend-production.up.railway.app/stats');
     const services = await res.json();
     const service = services.find(s => s.id === id);
     if (!service) return;
 
-    await fetch('https://yousef-backend-production-fa63.up.railway.app/services/' + id, {
+    await fetch('https://yousef-backend-production.up.railway.app/services/' + id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...service, visible: currentVisible ? 0 : 1 })
@@ -420,7 +420,7 @@ async function deleteService(id, name) {
         background: 'rgba(15,20,35,0.95)', color: 'white'
     }).then(async r => {
         if (r.isConfirmed) {
-           await fetch('https://yousef-backend-production-fa63.up.railway.app/services/' + id, { method: 'DELETE' });
+           await fetch('https://yousef-backend-production.up.railway.app/services/' + id, { method: 'DELETE' });
             loadServices();
             Swal.fire({ icon: 'success', title: 'تم الحذف', timer: 1000, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
         }
@@ -437,7 +437,7 @@ async function addService() {
         return;
     }
 
-  await fetch('https://yousef-backend-production-fa63.up.railway.app/services', {
+  await fetch('https://yousef-backend-production.up.railway.app/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, price_normal: parseInt(price), price_urgent: parseInt(urgP) })
@@ -467,7 +467,7 @@ async function changePass() {
         return;
     }
 
-const res = await fetch('https://yousef-backend-production-fa63.up.railway.app/change-password', {
+const res = await fetch('https://yousef-backend-production.up.railway.app/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oldPass: op, newPass: np })
@@ -512,5 +512,152 @@ updateStats();
 loadOrders();
 loadServices();
     </script>
+
+    <hr class="divider">
+
+    <!-- ===== قسم تتبع المعاملات ===== -->
+    <div class="section">
+        <div class="section-title">🗺️ تتبع المعاملات</div>
+
+        <!-- بحث برقم العقار -->
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
+            <input type="text" id="trackingSearchInput"
+                placeholder="أدخل رقم العقار (مثال: 345 أو 345/2)"
+                oninput="this.value=this.value.replace(/[^0-9\/]/g,'')"
+                style="background:rgba(255,255,255,0.08);border:1px solid rgba(0,210,255,0.3);border-radius:10px;padding:10px 15px;color:white;font-size:14px;width:280px;outline:none;direction:rtl;">
+            <button onclick="loadTrackingForAdmin()" style="background:linear-gradient(135deg,#00d2ff,#3a7bd5);border:none;color:white;padding:10px 22px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:bold;">
+                🔍 بحث / إنشاء
+            </button>
+        </div>
+
+        <!-- منطقة عرض الخطوات -->
+        <div id="trackingAdminArea" style="display:none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
+                <span style="color:#00d2ff;font-weight:bold;font-size:16px;">
+                    🏠 رقم العقار: <span id="currentTrackingProp" style="color:white;"></span>
+                </span>
+                <span style="color:rgba(255,255,255,0.5);font-size:13px;">
+                    اضغط على أي خطوة لتحديث حالتها
+                </span>
+            </div>
+
+            <div id="adminStepsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;"></div>
+        </div>
+    </div>
+
+    <script>
+    // ===== الخطوات الـ16 =====
+    const adminStepTitles = [
+        'تسجيل ديوان المالية',
+        'إيرادات المالية',
+        'دخل مقطوع',
+        'أرباح حقيقية',
+        'قصر تصرف',
+        'البصمة مالياً',
+        'موافقة أمنية',
+        'دراسة المراقب',
+        'ضريبة البيوع',
+        'تدقيق رئيس الشعبة',
+        'جباية الذمة',
+        'طباعة العقد',
+        'دراسة توثيق رئيس الشعبة',
+        'تصحيح المعاملة',
+        'ضريبة البيوع عقارياً',
+        'البصمة عقارياً'
+    ];
+
+    const BACKEND = 'https://yousef-backend-production-fa63.up.railway.app';
+    let currentPropNo = '';
+    let currentSteps  = [];
+
+    async function loadTrackingForAdmin() {
+        const val = document.getElementById('trackingSearchInput').value.trim();
+        if (!val) return Swal.fire({ icon:'warning', title:'أدخل رقم العقار', background:'rgba(15,20,35,0.95)', color:'white' });
+
+        const regex = /^[0-9]+(\/[0-9]+)?$/;
+        if (!regex.test(val)) return Swal.fire({ icon:'warning', title:'رقم غير صحيح', text:'أرقام فقط مثل 345 أو 345/2', background:'rgba(15,20,35,0.95)', color:'white' });
+
+        currentPropNo = val;
+        document.getElementById('currentTrackingProp').innerText = val;
+
+        try {
+            const res  = await fetch(`${BACKEND}/tracking/${encodeURIComponent(val)}`);
+            const data = await res.json();
+
+            if (data.found) {
+                currentSteps = data.steps;
+            } else {
+                // إنشاء خطوات افتراضية
+                currentSteps = adminStepTitles.map((t, i) => ({
+                    id: i + 1,
+                    status: i === 0 ? 'in-progress' : 'pending',
+                    date: null
+                }));
+                // حفظها في الباك إند
+                await fetch(`${BACKEND}/tracking`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ property_no: val, steps: currentSteps })
+                });
+            }
+
+            renderAdminSteps();
+            document.getElementById('trackingAdminArea').style.display = 'block';
+        } catch (err) {
+            Swal.fire({ icon:'error', title:'خطأ في الاتصال', background:'rgba(15,20,35,0.95)', color:'white' });
+        }
+    }
+
+    function renderAdminSteps() {
+        const grid = document.getElementById('adminStepsGrid');
+        grid.innerHTML = '';
+
+        currentSteps.forEach((step, idx) => {
+            const title = adminStepTitles[step.id - 1] || `خطوة ${step.id}`;
+            const isCompleted  = step.status === 'completed';
+            const isInProgress = step.status === 'in-progress';
+
+            const borderColor = isCompleted ? 'rgba(37,211,102,0.4)' : isInProgress ? 'rgba(0,210,255,0.4)' : 'rgba(255,255,255,0.08)';
+            const bgColor     = isCompleted ? 'rgba(37,211,102,0.08)' : isInProgress ? 'rgba(0,210,255,0.08)' : 'rgba(255,255,255,0.03)';
+            const badge       = isCompleted ? '<span style="background:rgba(37,211,102,0.2);color:#25d366;border:1px solid rgba(37,211,102,0.4);padding:3px 10px;border-radius:20px;font-size:12px;">✓ مكتمل</span>'
+                              : isInProgress ? '<span style="background:rgba(0,210,255,0.15);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);padding:3px 10px;border-radius:20px;font-size:12px;">⏳ جارٍ</span>'
+                              : '<span style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);padding:3px 10px;border-radius:20px;font-size:12px;">انتظار</span>';
+
+            const card = document.createElement('div');
+            card.style.cssText = `background:${bgColor};border:1px solid ${borderColor};border-radius:12px;padding:15px;cursor:pointer;transition:all 0.2s;`;
+            card.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span style="color:rgba(255,255,255,0.4);font-size:12px;">#${step.id}</span>
+                    ${badge}
+                </div>
+                <div style="color:white;font-size:14px;font-weight:bold;margin-bottom:10px;">${title}</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <button onclick="updateStep(${step.id},'completed')" style="flex:1;background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);color:#25d366;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:12px;transition:0.2s;" onmouseover="this.style.background='#25d366';this.style.color='white'" onmouseout="this.style.background='rgba(37,211,102,0.15)';this.style.color='#25d366'">✓ مكتمل</button>
+                    <button onclick="updateStep(${step.id},'in-progress')" style="flex:1;background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.3);color:#00d2ff;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:12px;transition:0.2s;" onmouseover="this.style.background='#00d2ff';this.style.color='white'" onmouseout="this.style.background='rgba(0,210,255,0.1)';this.style.color='#00d2ff'">⏳ جارٍ</button>
+                    <button onclick="updateStep(${step.id},'pending')" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:5px 8px;border-radius:7px;cursor:pointer;font-size:12px;" onmouseover="this.style.background='rgba(255,100,0,0.2)';this.style.color='#ff6400'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.4)'">✕ إلغاء</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    async function updateStep(stepId, status) {
+        try {
+            const res  = await fetch(`${BACKEND}/tracking/${encodeURIComponent(currentPropNo)}/step`, {
+                method: 'PUT',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ stepId, status })
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentSteps = data.steps;
+                renderAdminSteps();
+            }
+        } catch (err) {
+            Swal.fire({ icon:'error', title:'خطأ في التحديث', background:'rgba(15,20,35,0.95)', color:'white' });
+        }
+    }
+    </script>
+
 </body>
 </html>
