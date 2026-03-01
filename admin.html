@@ -3,661 +3,583 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة الأدمن - نظام يوسف</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #0b0f19; color: white; min-height: 100vh; }
-
-        .admin-header {
-            background: rgba(0,210,255,0.05);
-            border-bottom: 1px solid rgba(0,210,255,0.2);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .admin-header h1 { color: #00d2ff; font-size: 20px; }
-        .btn-logout { background: rgba(255,50,50,0.15); border: 1px solid rgba(255,50,50,0.4); color: #ff5555; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
-        .btn-logout:hover { background: #ff5555; color: white; }
-
-        .stats-bar { display: flex; gap: 20px; padding: 25px 30px; flex-wrap: wrap; }
-        .stat-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(0,210,255,0.15); border-radius: 15px; padding: 20px 30px; text-align: center; flex: 1; min-width: 150px; }
-        .stat-card .number { font-size: 36px; font-weight: 900; color: #00d2ff; }
-        .stat-card .label { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 5px; }
-
-        .section { padding: 20px 30px; }
-        .section-title { font-size: 18px; font-weight: bold; color: #00d2ff; margin-bottom: 15px; border-right: 4px solid #00d2ff; padding-right: 10px; }
-
-        .table-wrap { overflow-x: auto; border-radius: 15px; border: 1px solid rgba(0,210,255,0.15); }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        thead { background: rgba(0,210,255,0.1); }
-        th { padding: 14px 15px; text-align: right; color: #00d2ff; font-weight: 600; white-space: nowrap; }
-        td { padding: 12px 15px; border-top: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.85); white-space: nowrap; }
-        tr:hover td { background: rgba(0,210,255,0.04); }
-        .btn-delete { background: rgba(255,50,50,0.15); border: 1px solid rgba(255,50,50,0.3); color: #ff5555; padding: 5px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.3s; }
-        .btn-delete:hover { background: #ff5555; color: white; }
-        .empty-msg { text-align: center; padding: 40px; color: rgba(255,255,255,0.3); font-size: 16px; }
-
-       /* تنظيم شبكة الأسعار */
-.prices-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-    gap: 20px; 
-    margin-top: 10px;
-}
-
-/* تنسيق كارت السعر */
-.price-card { 
-    background: rgba(255, 255, 255, 0.05); 
-    border: 1px solid rgba(0, 210, 255, 0.1); 
-    border-radius: 12px; 
-    padding: 15px; 
-}
-
-.urgent-border { border-color: rgba(255, 100, 0, 0.3) !important; }
-.urgent-btn { background: linear-gradient(135deg, #ff6400, #ff4400) !important; }
-
-/* إصلاح تباعد كروت الإدارة */
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
-    margin-bottom: 30px;
-}
-        .price-card label { display: block; color: rgba(255,255,255,0.6); font-size: 13px; margin-bottom: 10px; }
-        .price-input-wrap { display: flex; gap: 10px; align-items: center; }
-        .price-card input { flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(0,210,255,0.3); border-radius: 8px; color: white; padding: 8px 12px; font-size: 15px; outline: none; width: 100%; }
-        .price-card input:focus { border-color: #00d2ff; }
-        .btn-save-price { background: linear-gradient(135deg,#00d2ff,#3a7bd5); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.3s; white-space: nowrap; }
-        .btn-save-price:hover { transform: translateY(-2px); }
-
-        .pass-form { background: rgba(255,255,255,0.04); border: 1px solid rgba(0,210,255,0.15); border-radius: 15px; padding: 25px; max-width: 400px; }
-        .pass-form input { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(0,210,255,0.3); border-radius: 8px; color: white; padding: 10px 15px; font-size: 14px; outline: none; margin-bottom: 12px; direction: ltr; }
-        .pass-form input::placeholder { color: rgba(255,255,255,0.3); }
-        .btn-save-pass { background: linear-gradient(135deg,#00d2ff,#3a7bd5); border: none; color: white; padding: 10px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s; width: 100%; }
-        .btn-save-pass:hover { transform: translateY(-2px); }
-
-        .divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 10px 0 25px; }
-        .badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .badge-normal { background: rgba(37,211,102,0.15); color: #25d366; border: 1px solid rgba(37,211,102,0.3); }
-        .badge-urgent { background: rgba(255,100,0,0.15); color: #ff6400; border: 1px solid rgba(255,100,0,0.3); }
-
-        /* ===== إدارة الخدمات ===== */
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 15px; margin-bottom: 20px; }
-        .service-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(0,210,255,0.15); border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 10px; transition: all 0.3s; }
-        .service-card.hidden-service { border-color: rgba(255,50,50,0.3); opacity: 0.6; }
-        .service-name { font-size: 15px; font-weight: bold; color: white; flex: 1; }
-        .service-actions { display: flex; gap: 8px; }
-        .btn-toggle { padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.3s; }
-        .btn-show { background: rgba(37,211,102,0.15); color: #25d366; border: 1px solid rgba(37,211,102,0.4); }
-        .btn-show:hover { background: #25d366; color: white; }
-        .btn-hide { background: rgba(255,100,0,0.15); color: #ff6400; border: 1px solid rgba(255,100,0,0.4); }
-        .btn-hide:hover { background: #ff6400; color: white; }
-        .btn-del-service { background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.3); color: #ff5555; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.3s; }
-        .btn-del-service:hover { background: #ff5555; color: white; }
-add-service-form { 
-        background: rgba(0, 210, 255, 0.04); 
-        border: 1px dashed rgba(0, 210, 255, 0.3); 
-        border-radius: 14px; 
-        padding: 20px; 
-        display: flex; 
-        gap: 12px; 
-        align-items: center; 
-        flex-wrap: wrap; 
-        margin-bottom: 30px;
-    }
-
-    /* إجبار المربعات على اللون الغامق ومنع اللون الأبيض */
-    .add-service-form input { 
-        flex: 1; 
-        min-width: 150px; 
-        background-color: #1a1f2b !important; /* لون كحلي غامق جداً */
-        border: 1px solid rgba(0, 210, 255, 0.3) !important; 
-        border-radius: 8px !important; 
-        color: #ffffff !important; /* لون النص أبيض */
-        padding: 12px 14px !important; 
-        font-size: 14px !important; 
-        outline: none !important;
-        -webkit-box-shadow: 0 0 0px 1000px #1a1f2b inset !important; /* هذه السطر يقتل اللون الأبيض الناتج عن التعبئة التلقائية */
-        transition: all 0.3s;
-    }
-
-    /* لضمان ظهور كلمة "السعر المستعجل" */
-    .add-service-form input::placeholder { 
-        color: rgba(255, 255, 255, 0.5) !important; 
-        opacity: 1 !important;
-    }
-
-    /* تحسين شكل زر الإضافة */
-    .btn-add-service { 
-        background: linear-gradient(135deg, #00d2ff, #3a7bd5); 
-        border: none; 
-        color: white; 
-        padding: 12px 25px; 
-        border-radius: 8px; 
-        cursor: pointer; 
-        font-weight: bold; 
-        transition: 0.3s;
-    }
-    </style>
+    <title>تتبع المعاملة - نظام يوسف</title>
+    <link rel="stylesheet" href="tracking.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="admin-header">
-        <h1>🛡️ لوحة الأدمن — نظام يوسف العقاري</h1>
-        <button class="btn-logout" onclick="logout()">🚪 تسجيل الخروج</button>
-    </div>
-
-    <div class="stats-bar">
-        <div class="stat-card"><div class="number" id="totalOrders">0</div><div class="label">إجمالي الطلبات</div></div>
-        <div class="stat-card"><div class="number" id="todayOrders">0</div><div class="label">طلبات اليوم</div></div>
-        <div class="stat-card"><div class="number" id="urgentOrders">0</div><div class="label">طلبات مستعجلة</div></div>
-        <div class="stat-card"><div class="number" id="totalRevenue">0</div><div class="label">إجمالي الإيرادات SYP</div></div>
-    </div>
-
-    <hr class="divider">
-
-    <div class="section">
-        <div class="section-title">📋 طلبات الزبائن</div>
-        <div class="table-wrap">
-            <table>
-                <thead><tr><th>#</th><th>اسم العميل</th><th>اسم الأم</th><th>رقم الهوية</th><th>رقم القيد</th><th>رقم العقار</th><th>المنطقة</th><th>نوع المعاملة</th><th>نوع الطلب</th><th>المبلغ</th><th>التاريخ</th><th>حذف</th></tr></thead>
-                <tbody id="ordersTable"><tr><td colspan="12" class="empty-msg">لا توجد طلبات بعد</td></tr></tbody>
-            </table>
+<!-- ===== SPLASH SCREEN ===== -->
+<div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+        <div class="splash-logo">
+            <div class="splash-icon-ring"></div>
+            <div class="splash-icon-ring ring-2"></div>
+            <i class="fas fa-map-marked-alt splash-icon"></i>
         </div>
-    </div>
-
-    <hr class="divider">
-
-    <!-- إدارة الخدمات -->
-    <div class="section">
-        <div class="section-title">⚙️ إدارة أنواع الخدمات</div>
-        <div class="services-grid" id="servicesGrid"></div>
-        <div class="add-service-form">
-            <input type="text"   id="newServiceName"        placeholder="اسم الخدمة الجديدة (مثال: سند تمليك)">
-            <input type="number" id="newServicePrice"       placeholder="السعر العادي">
-            <input type="number" id="newServiceUrgentPrice" placeholder="السعر المستعجل">
-            <button class="btn-add-service" onclick="addService()">➕ إضافة خدمة</button>
+        <h2 class="splash-title">نظام يوسف</h2>
+        <p class="splash-subtitle">تعقيب المعاملات العقارية</p>
+        <div class="splash-bar-wrap">
+            <div class="splash-bar" id="splashBar"></div>
         </div>
+        <span class="splash-loading">جاري التحميل...</span>
     </div>
+    <div class="splash-particles" id="splashParticles"></div>
+</div>
 
-    <hr class="divider">
+<!-- ===== BACKGROUND ELEMENTS ===== -->
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+<div class="stars" id="stars"></div>
 
-    <div class="section">
-        <div class="section-title">💰 تغيير الأسعار</div>
-        <p style="color:#25d366;margin-bottom:10px;font-size:14px;">🕐 أسعار عادي</p>
-        <div class="prices-grid" id="normalPricesGrid"></div>
-        <p style="color:#ff6400;margin:20px 0 10px;font-size:14px;">⚡ أسعار مستعجل</p>
-        <div class="prices-grid" id="urgentPricesGrid"></div>
-    </div>
+<!-- ===== CONFETTI CANVAS ===== -->
+<canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:9999;display:none;"></canvas>
 
-    <hr class="divider">
-
-    <div class="section">
-        <div class="section-title">🔐 تغيير كلمة السر</div>
-        <div class="pass-form">
-            <input type="password" id="oldPass"     placeholder="كلمة السر الحالية">
-            <input type="password" id="newPass"     placeholder="كلمة السر الجديدة">
-            <input type="password" id="confirmPass" placeholder="تأكيد كلمة السر الجديدة">
-            <button class="btn-save-pass" onclick="changePass()">💾 حفظ كلمة السر</button>
+<!-- ===== COMPLETION MODAL ===== -->
+<div id="completionModal" class="completion-modal" style="display:none;">
+    <div class="completion-content">
+        <div class="completion-icon">
+            <i class="fas fa-check-circle"></i>
+            <div class="completion-ring"></div>
         </div>
+        <h2 class="completion-title">🎉 تهانينا!</h2>
+        <p class="completion-text">تم إنجاز معاملتك بنجاح كامل</p>
+        <div class="completion-badge">
+            <i class="fas fa-star"></i> مكتملة 100%
+        </div>
+        <button class="completion-close" onclick="closeCompletionModal()">
+            <i class="fas fa-times"></i> إغلاق
+        </button>
     </div>
+</div>
 
-    <script>
-        
-       // ==============================
-// تحميل الإحصائيات
-// ==============================
-async function updateStats() {
-    try {
-        const res = await fetch('https://yousef-backend-production.up.railway.app/stats');
-        const data = await res.json();
-        document.getElementById('totalOrders').innerText  = data.total;
-        document.getElementById('todayOrders').innerText  = data.today;
-        document.getElementById('urgentOrders').innerText = data.urgent;
-        document.getElementById('totalRevenue').innerText = Number(data.revenue).toLocaleString();
-    } catch(e) {
-        console.error('خطأ في تحميل الإحصائيات');
-    }
-}
+<!-- ===== TOAST NOTIFICATION ===== -->
+<div id="toast" class="toast">
+    <i class="fas fa-check-circle toast-icon"></i>
+    <span id="toastMsg">تم النسخ!</span>
+</div>
 
-// ==============================
-// تحميل الطلبات
-// ==============================
-async function loadOrders() {
-    try {
-     const res = await fetch('https://yousef-backend-production.up.railway.app/orders');
-        const orders = await res.json();
-        const tbody = document.getElementById('ordersTable');
+<!-- ===== THEME TOGGLE ===== -->
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" data-tooltip="تبديل الوضع">
+    <i class="fas fa-sun" id="themeIcon"></i>
+</button>
 
-        if (!orders.length) {
-            tbody.innerHTML = '<tr><td colspan="12" class="empty-msg">لا توجد طلبات بعد</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = orders.map((o, i) => `
-            <tr>
-                <td>${i + 1}</td>
-                <td>${o.name}</td>
-                <td>${o.mother_name}</td>
-                <td>${o.national_id}</td>
-                <td>${o.reg_no}</td>
-                <td>${o.property_no}</td>
-                <td>${o.region}</td>
-                <td>${o.service_type}</td>
-                <td><span class="badge ${o.urgency === 'مستعجل ⚡' ? 'badge-urgent' : 'badge-normal'}">${o.urgency || 'عادي 🕐'}</span></td>
-                <td>${Number(o.price).toLocaleString()} SYP</td>
-                <td>${new Date(o.date).toLocaleDateString('ar-EG')}</td>
-                <td><button class="btn-delete" onclick="deleteOrder(${o.id})">🗑️ حذف</button></td>
-            </tr>`).join('');
-    } catch(e) {
-        console.error('خطأ في تحميل الطلبات');
-    }
-}
-
-// ==============================
-// حذف طلب
-// ==============================
-async function deleteOrder(id) {
-    Swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: 'سيتم حذف هذا الطلب نهائياً',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ff4444',
-        cancelButtonColor: '#00d2ff',
-        confirmButtonText: 'نعم، احذفه',
-        cancelButtonText: 'إلغاء',
-        background: 'rgba(15,20,35,0.95)',
-        color: 'white'
-    }).then(async r => {
-        if (r.isConfirmed) {
-       const res = await fetch('https://yousef-backend-production.up.railway.app/orders/' + id, { method: 'DELETE' });
-            const result = await res.json();
-            if (result.success) {
-                loadOrders();
-                updateStats();
-                Swal.fire({ icon: 'success', title: 'تم الحذف', timer: 1000, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
-            }
-        }
-    });
-}
-
-// ==============================
-// تحميل الخدمات
-// ==============================
-async function loadServices() {
-    try {
-const res = await fetch('https://yousef-backend-production.up.railway.app/services');
-        const services = await res.json();
-        
-        // حفظ نسخة احتياطية في متصفحك أنت
-        localStorage.setItem('my_services', JSON.stringify(services));
-        
-        renderServices(services);
-    } catch (error) {
-        console.log("السيرفر لم يرد، سأعرض البيانات المحفوظة سابقاً");
-        const backup = localStorage.getItem('my_services');
-        if (backup) renderServices(JSON.parse(backup));
-    }
-}
-
-function renderServices(services) {
-    // 1. رسم قائمة إدارة الخدمات (التي تعمل عندك الآن)
-    const grid = document.getElementById('servicesGrid');
-    if (grid) {
-        grid.innerHTML = services.map(s => `
-            <div class="service-card ${!s.visible ? 'hidden-service' : ''}">
-                <span class="status-dot ${s.visible ? 'dot-visible' : 'dot-hidden'}"></span>
-                <span class="service-name">${s.name}</span>
-                <div class="service-actions">
-                    <button class="btn-toggle ${s.visible ? 'btn-hide' : 'btn-show'}" onclick="toggleService(${s.id}, ${s.visible})">
-                        ${s.visible ? '🙈 إخفاء' : '👁️ إظهار'}
-                    </button>
-                    <button class="btn-del-service" onclick="deleteService(${s.id}, '${s.name}')">🗑️</button>
-                </div>
-            </div>`).join('');
-    }
-
-    // 2. رسم جدول الأسعار العادية
-    const normalGrid = document.getElementById('normalPricesGrid');
-    if (normalGrid) {
-        normalGrid.innerHTML = services.map(s => `
-            <div class="price-card">
-                <label>${s.name} (عادي)</label>
-                <div class="price-input-wrap">
-                    <input type="number" id="price_${s.id}" value="${s.price_normal}">
-                    <button class="btn-save-price" onclick="savePrice(${s.id}, 'normal')">حفظ</button>
-                </div>
-            </div>`).join('');
-    }
-
-    // 3. رسم جدول الأسعار المستعجلة
-    const urgentGrid = document.getElementById('urgentPricesGrid');
-    if (urgentGrid) {
-        urgentGrid.innerHTML = services.map(s => `
-            <div class="price-card" style="border-color:rgba(255,100,0,0.3);">
-                <label>${s.name} (مستعجل)</label>
-                <div class="price-input-wrap">
-                    <input type="number" id="price_${s.id}_urgent" value="${s.price_urgent}">
-                    <button class="btn-save-price" style="background:linear-gradient(135deg,#ff6400,#ff4400);" onclick="savePrice(${s.id}, 'urgent')">حفظ</button>
-                </div>
-            </div>`).join('');
-    }
-}
-
-function renderPricesGrids(services) {
-    const normalGrid  = document.getElementById('normalPricesGrid');
-    const urgentGrid  = document.getElementById('urgentPricesGrid');
-    if (!normalGrid || !urgentGrid) return;
-
-    normalGrid.innerHTML = services.map(s => `
-        <div class="price-card">
-            <label>${s.name} (عادي)</label>
-            <div class="price-input-wrap">
-                <input type="number" id="price_${s.id}" value="${s.price_normal}">
-                <button class="btn-save-price" onclick="savePrice(${s.id}, 'normal')">حفظ</button>
+<!-- ===== Header ===== -->
+<header class="tracking-header">
+    <div class="header-content">
+        <button class="back-btn" onclick="window.location.href='/'">
+            <i class="fas fa-arrow-right"></i>
+            <span>العودة</span>
+        </button>
+        <h1>
+            <i class="fas fa-map-marked-alt"></i>
+            تتبع المعاملة
+        </h1>
+        <div class="header-info">
+            <div style="display:flex;gap:8px;align-items:center;">
+                <input type="text" id="propertySearchInput"
+                    placeholder="أدخل رقم العقار للتتبع"
+                    oninput="this.value=this.value.replace(/[^0-9/]/g,'')"
+                    style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:7px 14px;color:white;font-size:14px;width:200px;outline:none;text-align:right;">
+                <button onclick="searchTracking()"
+                    style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;color:white;padding:7px 16px;border-radius:10px;cursor:pointer;font-size:14px;">
+                    🔍 تتبع
+                </button>
             </div>
-        </div>`).join('');
+        </div>
+    </div>
+    <!-- آخر تحديث -->
+    <div class="last-update-bar">
+        <div class="live-dot"></div>
+        <span id="lastUpdateText">آخر تحديث: منذ لحظات</span>
+        <span class="update-divider">•</span>
+        <span id="currentDateTime"></span>
+    </div>
+</header>
 
-    urgentGrid.innerHTML = services.map(s => `
-        <div class="price-card" style="border-color:rgba(255,100,0,0.3);">
-            <label>${s.name} (مستعجل)</label>
-            <div class="price-input-wrap">
-                <input type="number" id="price_${s.id}_urgent" value="${s.price_urgent}">
-                <button class="btn-save-price" style="background:linear-gradient(135deg,#ff6400,#ff4400);" onclick="savePrice(${s.id}, 'urgent')">حفظ</button>
+<!-- ===== Main Content ===== -->
+<div class="tracking-container">
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+        <div class="progress-header">
+            <div class="progress-info">
+                <h2>التقدم الكلي</h2>
+                <p class="progress-percentage" id="progressPercentage">0%</p>
             </div>
-        </div>`).join('');
-}
+            <div class="progress-stats">
+                <div class="stat" data-tooltip="المراحل المنجزة">
+                    <span class="stat-value" id="completedSteps">0</span>
+                    <span class="stat-label">مكتمل</span>
+                </div>
+                <div class="stat" data-tooltip="إجمالي المراحل">
+                    <span class="stat-value" id="totalSteps">16</span>
+                    <span class="stat-label">إجمالي</span>
+                </div>
+                <div class="stat" data-tooltip="الوقت المتوقع للانتهاء">
+                    <span class="stat-value" id="etaDays">—</span>
+                    <span class="stat-label">يوم متبقي</span>
+                </div>
+            </div>
+        </div>
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <!-- Share Button -->
+        <button class="share-btn" onclick="shareStatus()" data-tooltip="مشاركة حالة المعاملة">
+            <i class="fas fa-share-alt"></i>
+            مشاركة الحالة
+        </button>
+    </div>
 
-async function savePrice(id, type) {
-    const inputId = type === 'urgent' ? `price_${id}_urgent` : `price_${id}`;
-    const val = document.getElementById(inputId).value;
-    if (!val || isNaN(val)) {
-        Swal.fire({ icon: 'warning', title: 'أدخل رقماً صحيحاً', timer: 1500, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
-        return;
+    <!-- Timeline -->
+    <div class="timeline">
+        <!-- المراحل ستُملأ من JavaScript -->
+    </div>
+
+    <!-- Admin Note (optional) -->
+    <div class="admin-note" id="adminNote" style="display: none;">
+        <div class="note-icon">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+        <div class="note-content">
+            <h3>ملاحظة من الإدارة</h3>
+            <p id="noteText"></p>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="contact-section">
+        <div class="contact-card">
+            <div class="contact-icon">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <div class="contact-info">
+                <h3>هل لديك استفسار؟</h3>
+                <p>تواصل معنا عبر الواتساب</p>
+            </div>
+            <a href="https://wa.me/963967728034" target="_blank" class="contact-btn">
+                <i class="fab fa-whatsapp"></i>
+                تواصل الآن
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="tracking-footer">
+    <p>© 2026 <span>Yousef Akddeh</span> - نظام تعقيب المعاملات العقارية</p>
+</footer>
+
+<script>
+/* ============================================
+   ✨ PREMIUM FEATURES SCRIPT
+   1. Splash Screen
+   2. Animated Counters
+   3. Confetti + Completion Modal
+   4. Copy Transaction ID
+   5. Live Update Timer
+   6. Tooltips
+   7. Share Status
+   8. Dark/Light Theme Toggle
+   9. Stars Generator
+============================================ */
+
+// ── 1. GENERATE STARS ──────────────────────
+(function generateStars() {
+    const container = document.getElementById('stars');
+    for (let i = 0; i < 80; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.cssText = `
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            --dur: ${2 + Math.random() * 4}s;
+            animation-delay: ${Math.random() * 5}s;
+            width: ${Math.random() > 0.8 ? 3 : 2}px;
+            height: ${Math.random() > 0.8 ? 3 : 2}px;
+        `;
+        container.appendChild(star);
+    }
+})();
+
+// ── 2. SPLASH SCREEN ──────────────────────
+(function initSplash() {
+    const splash = document.getElementById('splashScreen');
+    const bar = document.getElementById('splashBar');
+    const particles = document.getElementById('splashParticles');
+
+    // Generate splash particles
+    for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'splash-particle';
+        p.style.cssText = `
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation-delay: ${Math.random() * 2}s;
+            animation-duration: ${3 + Math.random() * 3}s;
+            width: ${2 + Math.random() * 4}px;
+            height: ${2 + Math.random() * 4}px;
+            opacity: ${0.2 + Math.random() * 0.5};
+        `;
+        particles.appendChild(p);
     }
 
-    // جلب القيم الحالية أولاً
-const res = await fetch('https://yousef-backend-production.up.railway.app/services');
-    const services = await res.json();
-    const service = services.find(s => s.id === id);
-    if (!service) return;
+    // Animate bar
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 18 + 5;
+        if (progress >= 100) { progress = 100; clearInterval(interval); }
+        bar.style.width = progress + '%';
+    }, 120);
 
-    const body = {
-        name: service.name,
-        price_normal:  type === 'normal'  ? parseInt(val) : service.price_normal,
-        price_urgent:  type === 'urgent'  ? parseInt(val) : service.price_urgent,
-        visible: service.visible
-    };
+    // Hide after 2.2s
+    setTimeout(() => {
+        splash.classList.add('splash-exit');
+        setTimeout(() => {
+            splash.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 600);
+    }, 2200);
 
-    await fetch('https://yousef-backend-production.up.railway.app/services/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    Swal.fire({ icon: 'success', title: 'تم حفظ السعر ✅', timer: 1200, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
-}
+    document.body.style.overflow = 'hidden';
+})();
 
-async function toggleService(id, currentVisible) {
-const res = await fetch('https://yousef-backend-production.up.railway.app/stats');
-    const services = await res.json();
-    const service = services.find(s => s.id === id);
-    if (!service) return;
-
-    await fetch('https://yousef-backend-production.up.railway.app/services/' + id, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...service, visible: currentVisible ? 0 : 1 })
-    });
-
-    loadServices();
-    Swal.fire({ icon: 'success', title: currentVisible ? 'تم الإخفاء 🙈' : 'تم الإظهار ✅', timer: 1000, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
-}
-
-async function deleteService(id, name) {
-    Swal.fire({
-        title: 'حذف ' + name + '؟', text: 'سيتم حذفها نهائياً', icon: 'warning',
-        showCancelButton: true, confirmButtonColor: '#ff4444', cancelButtonColor: '#00d2ff',
-        confirmButtonText: 'نعم احذفها', cancelButtonText: 'إلغاء',
-        background: 'rgba(15,20,35,0.95)', color: 'white'
-    }).then(async r => {
-        if (r.isConfirmed) {
-           await fetch('https://yousef-backend-production.up.railway.app/services/' + id, { method: 'DELETE' });
-            loadServices();
-            Swal.fire({ icon: 'success', title: 'تم الحذف', timer: 1000, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
-        }
-    });
-}
-
-async function addService() {
-    const name  = document.getElementById('newServiceName').value.trim();
-    const price = document.getElementById('newServicePrice').value;
-    const urgP  = document.getElementById('newServiceUrgentPrice').value;
-
-    if (!name || !price || !urgP) {
-        Swal.fire({ icon: 'warning', title: 'أكمل جميع الحقول', background: 'rgba(15,20,35,0.95)', color: 'white' });
-        return;
+// ── 3. ANIMATED COUNTER ──────────────────
+function animateCounter(el, target, duration = 1500, suffix = '') {
+    const start = performance.now();
+    const from = 0;
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+    function step(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const value = Math.round(from + (target - from) * easeOut(progress));
+        el.textContent = value + suffix;
+        if (progress < 1) requestAnimationFrame(step);
     }
-
-  await fetch('https://yousef-backend-production.up.railway.app/services', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, price_normal: parseInt(price), price_urgent: parseInt(urgP) })
-    });
-
-    document.getElementById('newServiceName').value = '';
-    document.getElementById('newServicePrice').value = '';
-    document.getElementById('newServiceUrgentPrice').value = '';
-    loadServices();
-    Swal.fire({ icon: 'success', title: 'تمت الإضافة ✅', timer: 1200, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
+    requestAnimationFrame(step);
 }
 
-// ==============================
-// تغيير كلمة السر
-// ==============================
-async function changePass() {
-    const op = document.getElementById('oldPass').value;
-    const np = document.getElementById('newPass').value;
-    const cp = document.getElementById('confirmPass').value;
+// ── 4. LIVE DATE/TIME ─────────────────────
+function updateDateTime() {
+    const el = document.getElementById('currentDateTime');
+    const now = new Date();
+    const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    el.textContent = now.toLocaleDateString('ar-SY', opts);
+}
+updateDateTime();
+setInterval(updateDateTime, 60000);
 
-    if (!op || !np || !cp) {
-        Swal.fire({ icon: 'warning', title: 'أكمل جميع الحقول', background: 'rgba(15,20,35,0.95)', color: 'white' });
-        return;
-    }
-    if (np !== cp) {
-        Swal.fire({ icon: 'error', title: 'كلمة السر غير متطابقة', background: 'rgba(15,20,35,0.95)', color: 'white' });
-        return;
-    }
-
-const res = await fetch('https://yousef-backend-production.up.railway.app/change-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ oldPass: op, newPass: np })
-    });
-    const result = await res.json();
-
-    if (result.success) {
-        Swal.fire({ icon: 'success', title: 'تم تغيير كلمة السر ✅', timer: 1500, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
-        document.getElementById('oldPass').value = '';
-        document.getElementById('newPass').value = '';
-        document.getElementById('confirmPass').value = '';
+// Live "last update" counter
+let secondsSinceUpdate = 0;
+setInterval(() => {
+    secondsSinceUpdate++;
+    const el = document.getElementById('lastUpdateText');
+    if (secondsSinceUpdate < 60) {
+        el.textContent = `آخر تحديث: منذ ${secondsSinceUpdate} ثانية`;
+    } else if (secondsSinceUpdate < 3600) {
+        const m = Math.floor(secondsSinceUpdate / 60);
+        el.textContent = `آخر تحديث: منذ ${m} دقيقة`;
     } else {
-        Swal.fire({ icon: 'error', title: 'خطأ', text: result.message, background: 'rgba(15,20,35,0.95)', color: 'white' });
+        const h = Math.floor(secondsSinceUpdate / 3600);
+        el.textContent = `آخر تحديث: منذ ${h} ساعة`;
     }
-}
+}, 1000);
 
-// ==============================
-// تسجيل الخروج
-// ==============================
-function logout() {
-    Swal.fire({
-        title: 'تسجيل الخروج؟', icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#ff4444',
-        cancelButtonColor: '#00d2ff',
-        confirmButtonText: 'نعم',
-        cancelButtonText: 'إلغاء',
-        background: 'rgba(15,20,35,0.95)',
-        color: 'white'
-    }).then(r => {
-        if (r.isConfirmed) {
-            localStorage.removeItem('loggedIn');
-            window.location.href = '/login.html';
-        }
+// ── 5. COPY TRANSACTION ID ────────────────
+function copyTransactionId() {
+    const txnId = document.getElementById('txnId').textContent;
+    navigator.clipboard.writeText(txnId).catch(() => {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = txnId;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
     });
+
+    const icon = document.getElementById('copyIcon');
+    const btn = document.getElementById('copyIdBtn');
+    icon.className = 'fas fa-check';
+    btn.classList.add('copied');
+    showToast('✅ تم نسخ رقم المعاملة!');
+
+    setTimeout(() => {
+        icon.className = 'fas fa-copy';
+        btn.classList.remove('copied');
+    }, 2000);
 }
 
-// ==============================
-// تشغيل كل شيء عند فتح الصفحة
-// ==============================
-updateStats();
-loadOrders();
-loadServices();
-    </script>
+// ── 6. TOAST NOTIFICATION ─────────────────
+function showToast(msg, duration = 3000) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), duration);
+}
 
-    <hr class="divider">
+// ── 7. SHARE STATUS ───────────────────────
+function shareStatus() {
+    const name = document.getElementById('customerName').textContent;
+    const service = document.getElementById('serviceType').textContent;
+    const pct = document.getElementById('progressPercentage').textContent;
+    const txn = document.getElementById('txnId').textContent;
+    const text = `📋 تتبع معاملة\n👤 العميل: ${name}\n📌 الخدمة: ${service}\n📊 التقدم: ${pct}\n🔖 الرقم: ${txn}\n\n🔗 نظام يوسف للتعقيب العقاري`;
 
-    <!-- ===== قسم تتبع المعاملات ===== -->
-    <div class="section">
-        <div class="section-title">🗺️ تتبع المعاملات</div>
-
-        <!-- بحث برقم العقار -->
-        <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
-            <input type="text" id="trackingSearchInput"
-                placeholder="أدخل رقم العقار (مثال: 345 أو 345/2)"
-                oninput="this.value=this.value.replace(/[^0-9\/]/g,'')"
-                style="background:rgba(255,255,255,0.08);border:1px solid rgba(0,210,255,0.3);border-radius:10px;padding:10px 15px;color:white;font-size:14px;width:280px;outline:none;direction:rtl;">
-            <button onclick="loadTrackingForAdmin()" style="background:linear-gradient(135deg,#00d2ff,#3a7bd5);border:none;color:white;padding:10px 22px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:bold;">
-                🔍 بحث / إنشاء
-            </button>
-        </div>
-
-        <!-- منطقة عرض الخطوات -->
-        <div id="trackingAdminArea" style="display:none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
-                <span style="color:#00d2ff;font-weight:bold;font-size:16px;">
-                    🏠 رقم العقار: <span id="currentTrackingProp" style="color:white;"></span>
-                </span>
-                <span style="color:rgba(255,255,255,0.5);font-size:13px;">
-                    اضغط على أي خطوة لتحديث حالتها
-                </span>
-            </div>
-
-            <div id="adminStepsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;"></div>
-        </div>
-    </div>
-
-    <script>
-    // ===== الخطوات الـ16 =====
-    const adminStepTitles = [
-        'تسجيل ديوان المالية',
-        'إيرادات المالية',
-        'دخل مقطوع',
-        'أرباح حقيقية',
-        'قصر تصرف',
-        'البصمة مالياً',
-        'موافقة أمنية',
-        'دراسة المراقب',
-        'ضريبة البيوع',
-        'تدقيق رئيس الشعبة',
-        'جباية الذمة',
-        'طباعة العقد',
-        'دراسة توثيق رئيس الشعبة',
-        'تصحيح المعاملة',
-        'ضريبة البيوع عقارياً',
-        'البصمة عقارياً'
-    ];
-
-    const BACKEND = 'https://yousef-backend-production-fa63.up.railway.app';
-    let currentPropNo = '';
-    let currentSteps  = [];
-
-    async function loadTrackingForAdmin() {
-        const val = document.getElementById('trackingSearchInput').value.trim();
-        if (!val) return Swal.fire({ icon:'warning', title:'أدخل رقم العقار', background:'rgba(15,20,35,0.95)', color:'white' });
-
-        const regex = /^[0-9]+(\/[0-9]+)?$/;
-        if (!regex.test(val)) return Swal.fire({ icon:'warning', title:'رقم غير صحيح', text:'أرقام فقط مثل 345 أو 345/2', background:'rgba(15,20,35,0.95)', color:'white' });
-
-        currentPropNo = val;
-        document.getElementById('currentTrackingProp').innerText = val;
-
-        try {
-            const res  = await fetch(`${BACKEND}/tracking/${encodeURIComponent(val)}`);
-            const data = await res.json();
-
-            if (data.found) {
-                currentSteps = data.steps;
-            } else {
-                // إنشاء خطوات افتراضية
-                currentSteps = adminStepTitles.map((t, i) => ({
-                    id: i + 1,
-                    status: i === 0 ? 'in-progress' : 'pending',
-                    date: null
-                }));
-                // حفظها في الباك إند
-                await fetch(`${BACKEND}/tracking`, {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({ property_no: val, steps: currentSteps })
-                });
-            }
-
-            renderAdminSteps();
-            document.getElementById('trackingAdminArea').style.display = 'block';
-        } catch (err) {
-            Swal.fire({ icon:'error', title:'خطأ في الاتصال', background:'rgba(15,20,35,0.95)', color:'white' });
-        }
+    if (navigator.share) {
+        navigator.share({ title: 'حالة المعاملة', text }).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(text).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        });
+        showToast('📋 تم نسخ تفاصيل المعاملة!');
     }
+}
 
-    function renderAdminSteps() {
-        const grid = document.getElementById('adminStepsGrid');
-        grid.innerHTML = '';
+// ── 8. CONFETTI ───────────────────────────
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    canvas.style.display = 'block';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = [];
+    const colors = ['#6c63ff','#00d4ff','#ff6b9d','#ffb547','#00e676','#fff'];
 
-        currentSteps.forEach((step, idx) => {
-            const title = adminStepTitles[step.id - 1] || `خطوة ${step.id}`;
-            const isCompleted  = step.status === 'completed';
-            const isInProgress = step.status === 'in-progress';
-
-            const borderColor = isCompleted ? 'rgba(37,211,102,0.4)' : isInProgress ? 'rgba(0,210,255,0.4)' : 'rgba(255,255,255,0.08)';
-            const bgColor     = isCompleted ? 'rgba(37,211,102,0.08)' : isInProgress ? 'rgba(0,210,255,0.08)' : 'rgba(255,255,255,0.03)';
-            const badge       = isCompleted ? '<span style="background:rgba(37,211,102,0.2);color:#25d366;border:1px solid rgba(37,211,102,0.4);padding:3px 10px;border-radius:20px;font-size:12px;">✓ مكتمل</span>'
-                              : isInProgress ? '<span style="background:rgba(0,210,255,0.15);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);padding:3px 10px;border-radius:20px;font-size:12px;">⏳ جارٍ</span>'
-                              : '<span style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);padding:3px 10px;border-radius:20px;font-size:12px;">انتظار</span>';
-
-            const card = document.createElement('div');
-            card.style.cssText = `background:${bgColor};border:1px solid ${borderColor};border-radius:12px;padding:15px;cursor:pointer;transition:all 0.2s;`;
-            card.innerHTML = `
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                    <span style="color:rgba(255,255,255,0.4);font-size:12px;">#${step.id}</span>
-                    ${badge}
-                </div>
-                <div style="color:white;font-size:14px;font-weight:bold;margin-bottom:10px;">${title}</div>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                    <button onclick="updateStep(${step.id},'completed')" style="flex:1;background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);color:#25d366;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:12px;transition:0.2s;" onmouseover="this.style.background='#25d366';this.style.color='white'" onmouseout="this.style.background='rgba(37,211,102,0.15)';this.style.color='#25d366'">✓ مكتمل</button>
-                    <button onclick="updateStep(${step.id},'in-progress')" style="flex:1;background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.3);color:#00d2ff;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:12px;transition:0.2s;" onmouseover="this.style.background='#00d2ff';this.style.color='white'" onmouseout="this.style.background='rgba(0,210,255,0.1)';this.style.color='#00d2ff'">⏳ جارٍ</button>
-                    <button onclick="updateStep(${step.id},'pending')" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:5px 8px;border-radius:7px;cursor:pointer;font-size:12px;" onmouseover="this.style.background='rgba(255,100,0,0.2)';this.style.color='#ff6400'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.4)'">✕ إلغاء</button>
-                </div>
-            `;
-            grid.appendChild(card);
+    for (let i = 0; i < 200; i++) {
+        pieces.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            r: Math.random() * 6 + 3,
+            d: Math.random() * 200,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            tilt: Math.random() * 10 - 10,
+            tiltAngle: 0,
+            tiltAngleIncrement: Math.random() * 0.07 + 0.05,
+            shape: Math.random() > 0.5 ? 'circle' : 'rect',
         });
     }
 
-    async function updateStep(stepId, status) {
-        try {
-            const res  = await fetch(`${BACKEND}/tracking/${encodeURIComponent(currentPropNo)}/step`, {
-                method: 'PUT',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ stepId, status })
-            });
-            const data = await res.json();
-            if (data.success) {
-                currentSteps = data.steps;
-                renderAdminSteps();
+    let angle = 0, tick = 0;
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        angle += 0.01;
+        tick++;
+        pieces.forEach((p, i) => {
+            ctx.beginPath();
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = 0.85;
+            p.tiltAngle += p.tiltAngleIncrement;
+            p.y += (Math.cos(angle + p.d) + 2 + p.r / 2) * 1.5;
+            p.x += Math.sin(angle) * 1.5;
+            p.tilt = Math.sin(p.tiltAngle) * 12;
+            if (p.shape === 'circle') {
+                ctx.arc(p.x + p.tilt, p.y, p.r, 0, Math.PI * 2);
+            } else {
+                ctx.rect(p.x + p.tilt, p.y, p.r, p.r * 2);
             }
-        } catch (err) {
-            Swal.fire({ icon:'error', title:'خطأ في التحديث', background:'rgba(15,20,35,0.95)', color:'white' });
+            ctx.fill();
+            if (p.y > canvas.height) {
+                pieces[i].y = -20;
+                pieces[i].x = Math.random() * canvas.width;
+            }
+        });
+        if (tick < 300) requestAnimationFrame(draw);
+        else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.style.display = 'none';
         }
     }
-    </script>
+    draw();
+}
+
+function showCompletionModal() {
+    const modal = document.getElementById('completionModal');
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+    setTimeout(launchConfetti, 300);
+}
+function closeCompletionModal() {
+    const modal = document.getElementById('completionModal');
+    modal.style.display = 'none';
+    modal.classList.remove('active');
+}
+
+// ── 9. THEME TOGGLE ───────────────────────
+let isLight = false;
+function toggleTheme() {
+    isLight = !isLight;
+    document.body.classList.toggle('light-theme', isLight);
+    document.getElementById('themeIcon').className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    showToast(isLight ? '☀️ الوضع الفاتح' : '🌙 الوضع الداكن', 1800);
+}
+// Load saved theme
+if (localStorage.getItem('theme') === 'light') {
+    isLight = true;
+    document.body.classList.add('light-theme');
+    document.getElementById('themeIcon').className = 'fas fa-moon';
+}
+
+// ── 10. PROGRESS UPDATE HOOK ─────────────
+window.updateProgressUI = function(completed, total) {
+    const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    // Animated counter للنسبة
+    const pctEl = document.getElementById('progressPercentage');
+    const dur = 1600;
+    const startTime = performance.now();
+    function animPct(now) {
+        const t = Math.min((now - startTime) / dur, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        pctEl.textContent = Math.round(ease * pct) + '%';
+        if (t < 1) requestAnimationFrame(animPct);
+    }
+    requestAnimationFrame(animPct);
+
+    // Animated counters للأرقام
+    animateCounter(document.getElementById('completedSteps'), completed, 1400);
+
+    // ETA
+    const remaining = total - completed;
+    const eta = document.getElementById('etaDays');
+    if (eta) {
+        if (remaining > 0) animateCounter(eta, remaining * 3, 1200);
+        else eta.textContent = '✓';
+    }
+
+    // Progress bar
+    setTimeout(() => {
+        const bar = document.getElementById('progressBar');
+        if (bar) bar.style.width = pct + '%';
+    }, 200);
+
+    // 🎊 الاحتفال عند الاكتمال — فقط مرة واحدة في الجلسة
+    if (pct === 100 && !sessionStorage.getItem('celebrationShown')) {
+        sessionStorage.setItem('celebrationShown', '1');
+        // ننتظر حتى بعد انتهاء الـ splash screen (2.5s) + تأخير إضافي
+        setTimeout(showCompletionModal, 3200);
+    }
+};
+</script>
+
+<!-- tracking.js يُحمَّل أخيراً بعد تعريف كل الدوال أعلاه -->
+<script src="tracking.js"></script>
+
+
+<div id="searchOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:center;">
+    <div style="background:#0d1117;border:1px solid rgba(0,210,255,0.3);border-radius:20px;padding:35px;text-align:center;max-width:350px;width:90%;">
+        <h2 style="color:#00d2ff;margin-bottom:8px;">🔍 تتبع معاملتك</h2>
+        <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:20px;">أدخل رقم العقار لمعرفة مرحلة معاملتك</p>
+        <input type="text" id="overlayInput"
+            placeholder="مثال: 345 أو 345/2"
+            oninput="this.value=this.value.replace(/[^0-9/]/g,'')"
+            style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(0,210,255,0.3);border-radius:10px;padding:12px 15px;color:white;font-size:15px;outline:none;text-align:center;margin-bottom:15px;">
+        <button onclick="doSearch()"
+            style="width:100%;background:linear-gradient(135deg,#00d2ff,#3a7bd5);border:none;color:white;padding:12px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:bold;margin-bottom:10px;">
+            بحث 🚀
+        </button>
+        <div id="searchError" style="color:#ff5555;font-size:13px;display:none;margin-top:5px;"></div>
+    </div>
+</div>
+
+<script>
+const TRACK_BACKEND = 'https://yousef-backend-production-fa63.up.railway.app';
+
+const STEP_DETAILS = [
+    { title:'تسجيل ديوان المالية',    description:'تسجيل المعاملة في السجلات الرسمية لديوان المالية', icon:'📝' },
+    { title:'إيرادات المالية',         description:'مراجعة وتدقيق الإيرادات المالية المتعلقة بالمعاملة', icon:'💰' },
+    { title:'دخل مقطوع',              description:'احتساب وتحديد الدخل المقطوع للمعاملة', icon:'📊' },
+    { title:'أرباح حقيقية',           description:'تقييم ومراجعة الأرباح الحقيقية من المعاملة', icon:'💹' },
+    { title:'قصر تصرف',               description:'التحقق من عدم وجود قيود على التصرف بالعقار', icon:'🔒' },
+    { title:'البصمة مالياً',           description:'التحقق من البصمة المالية والسجل الضريبي', icon:'👆' },
+    { title:'موافقة أمنية',           description:'الحصول على الموافقة الأمنية اللازمة', icon:'🛡️' },
+    { title:'دراسة المراقب',           description:'مراجعة ودراسة المعاملة من قبل المراقب المختص', icon:'🔍' },
+    { title:'ضريبة البيوع',            description:'احتساب ودفع ضريبة البيوع المستحقة', icon:'💳' },
+    { title:'تدقيق رئيس الشعبة',      description:'التدقيق النهائي من قبل رئيس الشعبة', icon:'✅' },
+    { title:'جباية الذمة',            description:'التحقق من سداد جميع الالتزامات المالية', icon:'📋' },
+    { title:'طباعة العقد',            description:'إعداد وطباعة وثيقة العقد الرسمية', icon:'🖨️' },
+    { title:'دراسة توثيق رئيس الشعبة',description:'مراجعة وثيقة العقد من قبل رئيس الشعبة', icon:'📌' },
+    { title:'تصحيح المعاملة',         description:'مراجعة وتصحيح أي أخطاء في المعاملة', icon:'✏️' },
+    { title:'ضريبة البيوع عقارياً',   description:'تسوية ضريبة البيوع العقارية النهائية', icon:'🏛️' },
+    { title:'البصمة عقارياً',         description:'التوثيق النهائي والبصمة في السجل العقاري', icon:'🏠' },
+];
+
+// عند فتح الصفحة — أظهر overlay للبحث
+window.addEventListener('load', () => {
+    const saved = sessionStorage.getItem('trackingPropNo');
+    if (saved) {
+        loadFromBackend(saved);
+    } else {
+        document.getElementById('searchOverlay').style.display = 'flex';
+    }
+});
+
+function searchTracking() {
+    document.getElementById('searchOverlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('overlayInput').focus(), 100);
+}
+
+async function doSearch() {
+    const val = document.getElementById('overlayInput').value.trim();
+    const errEl = document.getElementById('searchError');
+    errEl.style.display = 'none';
+
+    if (!val) { errEl.textContent = 'يرجى إدخال رقم العقار'; errEl.style.display = 'block'; return; }
+    const regex = /^[0-9]+(\/[0-9]+)?$/;
+    if (!regex.test(val)) { errEl.textContent = 'أرقام فقط مثل 345 أو 345/2'; errEl.style.display = 'block'; return; }
+
+    await loadFromBackend(val);
+}
+
+async function loadFromBackend(propNo) {
+    try {
+        const res  = await fetch(`${TRACK_BACKEND}/tracking/${encodeURIComponent(propNo)}`);
+        const data = await res.json();
+
+        if (!data.found) {
+            const errEl = document.getElementById('searchError');
+            errEl.textContent = 'لم يتم العثور على معاملة بهذا الرقم';
+            errEl.style.display = 'block';
+            document.getElementById('searchOverlay').style.display = 'flex';
+            return;
+        }
+
+        sessionStorage.setItem('trackingPropNo', propNo);
+        document.getElementById('searchOverlay').style.display = 'none';
+
+        // حقن البيانات في trackingSteps
+        const backendSteps = data.steps;
+        backendSteps.forEach(bs => {
+            const found = trackingSteps.find(s => s.id === bs.id);
+            if (found) {
+                found.status = bs.status;
+                found.date   = bs.date;
+            }
+        });
+
+        renderTimeline();
+        updateProgress();
+
+        // تحديث العنوان
+        const lastUpdate = document.getElementById('lastUpdateText');
+        if (lastUpdate) lastUpdate.textContent = `رقم العقار: ${propNo}`;
+
+    } catch(e) {
+        const errEl = document.getElementById('searchError');
+        if (errEl) { errEl.textContent = 'خطأ في الاتصال بالسيرفر'; errEl.style.display = 'block'; }
+        document.getElementById('searchOverlay').style.display = 'flex';
+    }
+}
+</script>
 
 </body>
 </html>
