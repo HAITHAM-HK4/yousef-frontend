@@ -526,10 +526,18 @@ window.addEventListener('load', () => {
 
 
 
+function searchTracking() {
+    const val = document.getElementById('propertySearchInput').value.trim();
+    if (!val) {
+        alert('يرجى إدخال رقم العقار');
+        return;
+    }
     const regex = /^[0-9]+(\/[0-9]+)?$/;
-    if (!regex.test(val)) { errEl.textContent = 'أرقام فقط مثل 345 أو 345/2'; errEl.style.display = 'block'; return; }
-
-    await loadFromBackend(val);
+    if (!regex.test(val)) {
+        alert('أرقام فقط مثل 345 أو 345/2');
+        return;
+    }
+    loadFromBackend(val);
 }
 
 async function loadFromBackend(propNo) {
