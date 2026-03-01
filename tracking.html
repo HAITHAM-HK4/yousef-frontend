@@ -76,16 +76,22 @@
             <i class="fas fa-map-marked-alt"></i>
             تتبع المعاملة
         </h1>
-        <div class="header-info">
-            <span class="customer-name" id="customerName">العميل</span>
-            <span class="separator">•</span>
-            <span class="service-type" id="serviceType">بيان قيد</span>
-            <!-- زر نسخ رقم المعاملة -->
-            <button class="copy-id-btn" id="copyIdBtn" onclick="copyTransactionId()" data-tooltip="نسخ رقم المعاملة">
-                <i class="fas fa-copy" id="copyIcon"></i>
-                <span id="txnId">#TXN-2026-0142</span>
-            </button>
-        </div>
+
+<!-- بعد - ضع هذا بدلاً منه -->
+<div class="header-info">
+    <div class="search-box" style="display:flex; gap:10px; align-items:center;">
+        <input 
+            type="text" 
+            id="propertySearch" 
+            placeholder="أدخل رقم العقار (مثال: 345 أو 345/2)"
+            oninput="this.value=this.value.replace(/[^0-9\/]/g,'')"
+            style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); border-radius:10px; padding:8px 15px; color:white; font-size:14px; width:260px; outline:none; text-align:right;"
+        >
+        <button onclick="searchByProperty()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5); border:none; color:white; padding:8px 18px; border-radius:10px; cursor:pointer; font-size:14px;">
+            🔍 بحث
+        </button>
+    </div>
+</div>
     </div>
     <!-- آخر تحديث -->
     <div class="last-update-bar">
