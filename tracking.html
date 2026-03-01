@@ -475,19 +475,6 @@ window.updateProgressUI = function(completed, total) {
 <script src="tracking.js"></script>
 
 
-<div id="searchOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:center;">
-    <div style="background:#0d1117;border:1px solid rgba(0,210,255,0.3);border-radius:20px;padding:35px;text-align:center;max-width:350px;width:90%;">
-        <h2 style="color:#00d2ff;margin-bottom:8px;">🔍 تتبع معاملتك</h2>
-        <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:20px;">أدخل رقم العقار لمعرفة مرحلة معاملتك</p>
-        <input type="text" id="overlayInput"
-            placeholder="مثال: 345 أو 345/2"
-            oninput="this.value=this.value.replace(/[^0-9/]/g,'')"
-            style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(0,210,255,0.3);border-radius:10px;padding:12px 15px;color:white;font-size:15px;outline:none;text-align:center;margin-bottom:15px;">
-        <button onclick="doSearch()"
-            style="width:100%;background:linear-gradient(135deg,#00d2ff,#3a7bd5);border:none;color:white;padding:12px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:bold;margin-bottom:10px;">
-            بحث 🚀
-        </button>
-        <div id="searchError" style="color:#ff5555;font-size:13px;display:none;margin-top:5px;"></div>
     </div>
 </div>
 
@@ -515,42 +502,24 @@ const STEP_DETAILS = [
 
 // عند فتح الصفحة
 window.addEventListener('load', () => {
-    // لو جاء من admin عبر URL parameter مثل tracking.html?prop=345
-    const params = new URLSearchParams(window.location.search);
-    const propFromAdmin = params.get('prop');
-
-    if (propFromAdmin) {
-        sessionStorage.setItem('trackingPropNo', propFromAdmin);
-        loadFromBackend(propFromAdmin);
-        return;
-    }
-
-    // لو مسجل دخول كأدمن لا تعرض overlay — هو في admin.html بالأصل
     if (localStorage.getItem('loggedIn') === 'true') {
-        sessionStorage.removeItem('trackingPropNo');
         window.location.href = '/admin.html';
         return;
     }
-
-    const saved = sessionStorage.getItem('trackingPropNo');
-    if (saved) {
-        loadFromBackend(saved);
+    const params = new URLSearchParams(window.location.search);
+    const prop   = params.get('prop');
+    if (prop) {
+        sessionStorage.setItem('trackingPropNo', prop);
+        loadFromBackend(prop);
     } else {
-        document.getElementById('searchOverlay').style.display = 'flex';
+        const saved = sessionStorage.getItem('trackingPropNo');
+        if (saved) loadFromBackend(saved);
     }
 });
 
-function searchTracking() {
-    document.getElementById('searchOverlay').style.display = 'flex';
-    setTimeout(() => document.getElementById('overlayInput').focus(), 100);
-}
 
-async function doSearch() {
-    const val = document.getElementById('overlayInput').value.trim();
-    const errEl = document.getElementById('searchError');
-    errEl.style.display = 'none';
 
-    if (!val) { errEl.textContent = 'يرجى إدخال رقم العقار'; errEl.style.display = 'block'; return; }
+
     const regex = /^[0-9]+(\/[0-9]+)?$/;
     if (!regex.test(val)) { errEl.textContent = 'أرقام فقط مثل 345 أو 345/2'; errEl.style.display = 'block'; return; }
 
@@ -566,12 +535,10 @@ async function loadFromBackend(propNo) {
             const errEl = document.getElementById('searchError');
             errEl.textContent = 'لم يتم العثور على معاملة بهذا الرقم';
             errEl.style.display = 'block';
-            document.getElementById('searchOverlay').style.display = 'flex';
             return;
         }
 
         sessionStorage.setItem('trackingPropNo', propNo);
-        document.getElementById('searchOverlay').style.display = 'none';
 
         // حقن البيانات في trackingSteps
         const backendSteps = data.steps;
@@ -593,7 +560,6 @@ async function loadFromBackend(propNo) {
     } catch(e) {
         const errEl = document.getElementById('searchError');
         if (errEl) { errEl.textContent = 'خطأ في الاتصال بالسيرفر'; errEl.style.display = 'block'; }
-        document.getElementById('searchOverlay').style.display = 'flex';
     }
 }
 </script>
