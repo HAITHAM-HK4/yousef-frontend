@@ -515,12 +515,15 @@ const STEP_DETAILS = [
 
 // عند فتح الصفحة — أظهر overlay للبحث
 window.addEventListener('load', () => {
+    // لو جاء من admin لا تفتح overlay
+    const fromAdmin = document.referrer.includes('admin');
     const saved = sessionStorage.getItem('trackingPropNo');
-    if (saved) {
-        loadFromBackend(saved);
-    } else {
-        document.getElementById('searchOverlay').style.display = 'flex';
+    
+    if (fromAdmin || saved) {
+        if (saved) loadFromBackend(saved);
+        return;
     }
+    document.getElementById('searchOverlay').style.display = 'flex';
 });
 
 function searchTracking() {
