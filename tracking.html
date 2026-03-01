@@ -513,17 +513,31 @@ const STEP_DETAILS = [
     { title:'البصمة عقارياً',         description:'التوثيق النهائي والبصمة في السجل العقاري', icon:'🏠' },
 ];
 
-// عند فتح الصفحة — أظهر overlay للبحث
+// عند فتح الصفحة
 window.addEventListener('load', () => {
-    // لو جاء من admin لا تفتح overlay
-    const fromAdmin = document.referrer.includes('admin');
-    const saved = sessionStorage.getItem('trackingPropNo');
-    
-    if (fromAdmin || saved) {
-        if (saved) loadFromBackend(saved);
+    // لو جاء من admin عبر URL parameter مثل tracking.html?prop=345
+    const params = new URLSearchParams(window.location.search);
+    const propFromAdmin = params.get('prop');
+
+    if (propFromAdmin) {
+        sessionStorage.setItem('trackingPropNo', propFromAdmin);
+        loadFromBackend(propFromAdmin);
         return;
     }
-    document.getElementById('searchOverlay').style.display = 'flex';
+
+    // لو مسجل دخول كأدمن لا تعرض overlay — هو في admin.html بالأصل
+    if (localStorage.getItem('loggedIn') === 'true') {
+        sessionStorage.removeItem('trackingPropNo');
+        window.location.href = '/admin.html';
+        return;
+    }
+
+    const saved = sessionStorage.getItem('trackingPropNo');
+    if (saved) {
+        loadFromBackend(saved);
+    } else {
+        document.getElementById('searchOverlay').style.display = 'flex';
+    }
 });
 
 function searchTracking() {
