@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <script></script>
+    <title>نظام تعقيب المعاملات العقارية</title>
+    <link rel="stylesheet" href="yousef.css?v=1.1">
+<style>
+
+/* ============================================
+   📱 FULL RESPONSIVE — Mobile First
+   شاشات: 320px → 480px → 768px → 1024px+
+============================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    min-width: 0 !important;
+    overflow-x: hidden;
+}
+
+/* ── المحتوى الرئيسي ── */
+.main-content {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 40px;
+    flex: 1;
+    padding: 40px 20px;
+    min-width: unset;
+    width: 100%;
+}
+
+.left-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ── زر تتبع المعاملة ── */
+.tracking-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+    width: 100%;
+    max-width: 320px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,212,255,0.08));
+    border: 1px solid rgba(108,99,255,0.35);
+    border-radius: 18px;
+    text-decoration: none;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 30px rgba(108,99,255,0.2), inset 0 1px 0 rgba(255,255,255,0.07);
+    direction: rtl;
+}
+
+.tracking-nav-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+.tracking-nav-btn:hover::before { transform: translateX(100%); }
+.tracking-nav-btn:hover {
+    transform: translateY(-3px);
+    border-color: rgba(108,99,255,0.65);
+    box-shadow: 0 15px 40px rgba(108,99,255,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
+    background: linear-gradient(135deg, rgba(108,99,255,0.25), rgba(0,212,255,0.14));
+}
+.tracking-nav-btn:active { transform: translateY(-1px) scale(0.98); }
+
+.tracking-nav-icon {
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, #6c63ff, #00d4ff);
+    border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(108,99,255,0.45);
+    animation: trackIconGlow 2.5s ease-in-out infinite;
+}
+@keyframes trackIconGlow {
+    0%,100% { box-shadow: 0 4px 15px rgba(108,99,255,0.4); }
+    50%      { box-shadow: 0 4px 25px rgba(0,212,255,0.6); }
+}
+
+.tracking-nav-text {
+    flex: 1;
+    display: flex; flex-direction: column; gap: 2px;
+}
+.tracking-nav-text strong {
+    font-size: 16px; font-weight: 800; color: #e8eaf6;
+    font-family: 'Cairo', sans-serif;
+}
+.tracking-nav-text small {
+    font-size: 12px; color: rgba(144,164,200,0.85); font-weight: 500;
+}
+.tracking-nav-arrow {
+    font-size: 20px; color: rgba(108,99,255,0.8);
+    transition: transform 0.3s ease; font-weight: 700; flex-shrink: 0;
+}
+.tracking-nav-btn:hover .tracking-nav-arrow {
+    transform: translateX(-5px); color: #00d4ff;
+}
+.tracking-nav-pulse {
+    position: absolute; top: 12px; left: 14px;
+    width: 8px; height: 8px;
+    background: #00e676; border-radius: 50%;
+    box-shadow: 0 0 8px #00e676;
+    animation: navPulse 1.8s ease-in-out infinite;
+}
+@keyframes navPulse {
+    0%,100% { transform: scale(1);   box-shadow: 0 0 5px  #00e676; }
+    50%      { transform: scale(1.5); box-shadow: 0 0 14px #00e676; }
+}
+
+/* ============================================
+   📱 MOBILE ≤ 768px
+============================================ */
+@media screen and (max-width: 768px) {
+
+    /* النطاق الكلي */
+    body { font-size: 15px; }
+
+    /* الأنسر أصغر وأخف */
+    #oldEagle {
+        top: 80px !important; left: 8% !important;
+        transform: translateX(-50%) !important;
+        width: 65px !important; opacity: 0.6 !important;
+    }
+    #newEagle {
+        top: -55px !important; left: -5px !important;
+        width: 85px !important; opacity: 0.6 !important;
+    }
+
+    /* المحتوى الرئيسي عمودي */
+    .main-content {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 20px !important;
+        padding: 12px 12px 28px !important;
+    }
+
+    /* left-side فوق الفورم */
+    .left-side {
+        width: 100% !important;
+        align-items: center !important;
+        order: -1;
+        margin-bottom: 4px !important;
+    }
+
+    /* العنوان الإنجليزي */
+    .left-side > div[style] {
+        margin-bottom: 14px !important;
+    }
+    .left-side > div[style] h2 {
+        font-size: 15px !important;
+        line-height: 1.5 !important;
+        padding: 0 8px;
+    }
+    .left-side > div[style] p {
+        font-size: 13px !important;
+    }
+
+    /* الكارد */
+    .card {
+        width: 100% !important;
+        max-width: 340px !important;
+    }
+
+    /* كونتينر الفورم */
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* العنوان h1 */
+    h1 {
+        font-size: 19px !important;
+        text-align: center !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* شريط الاستعجال */
+    .urgency-btn {
+        font-size: 13px !important;
+        padding: 9px 12px !important;
+    }
+
+    /* form-title */
+    #form-title {
+        font-size: 15px !important;
+        text-align: right !important;
+        direction: rtl !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* الحقول */
+    .input-group { margin-bottom: 11px !important; }
+    .input-group label { font-size: 13px !important; }
+    .input-group input {
+        font-size: 16px !important; /* iOS anti-zoom */
+        padding: 11px 13px !important;
+    }
+
+    /* زر الحفظ */
+    .btn-yousef-action {
+        padding: 14px !important;
+        font-size: 16px !important;
+        margin-top: 8px !important;
+    }
+
+    /* زر التتبع */
+    .tracking-nav-btn {
+        max-width: 100% !important;
+        margin-top: 12px !important;
+    }
+
+    /* زر الثيم */
+    .theme-toggle {
+        top: 10px !important; right: 10px !important;
+        width: 38px !important; height: 38px !important;
+        font-size: 18px !important;
+    }
+
+    /* الفوتر */
+    .footer-inner {
+        padding: 16px 12px !important;
+        gap: 10px !important;
+    }
+    .footer-title { font-size: 15px !important; }
+    .social-links { gap: 8px !important; }
+    .social-btn {
+        padding: 9px 14px !important;
+        font-size: 13px !important;
+        border-radius: 10px !important;
+    }
+    .footer-copy {
+        font-size: 11px !important;
+        text-align: center !important;
+    }
+
+    /* نافذة الترحيب */
+    .welcome-box {
+        padding: 22px 16px !important;
+        width: 92% !important;
+        border-radius: 18px !important;
+    }
+    .welcome-title  { font-size: 19px !important; }
+    .welcome-text   { font-size: 13px !important; line-height: 1.6 !important; }
+    .welcome-icons  { gap: 14px !important; }
+    .w-icon span    { font-size: 12px !important; }
+    .welcome-btn    { padding: 12px 28px !important; font-size: 15px !important; }
+}
+
+/* ============================================
+   📱 SMALL MOBILE ≤ 480px
+============================================ */
+@media screen and (max-width: 480px) {
+
+    .main-content { padding: 10px 10px 22px !important; gap: 16px !important; }
+
+    h1 { font-size: 17px !important; }
+    #form-title { font-size: 13px !important; }
+
+    .input-group input  { padding: 10px 11px !important; }
+    .input-group label  { font-size: 12px !important; }
+    .urgency-btn        { font-size: 12px !important; padding: 8px 10px !important; }
+    .btn-yousef-action  { padding: 13px !important; font-size: 15px !important; }
+
+    .card { max-width: 300px !important; }
+
+    .left-side > div[style] h2 { font-size: 13px !important; }
+    .left-side > div[style] p  { font-size: 12px !important; }
+
+    .tracking-nav-text strong { font-size: 14px !important; }
+    .tracking-nav-text small  { font-size: 11px !important; }
+    .tracking-nav-icon        { width: 40px !important; height: 40px !important; }
+
+    /* أزرار السوشال: دوائر فقط */
+    .social-btn span { display: none; }
+    .social-btn {
+        padding: 0 !important;
+        width: 44px !important; height: 44px !important;
+        border-radius: 50% !important;
+        justify-content: center !important;
+    }
+    .icon-wrap { width: 20px !important; height: 20px !important; }
+
+    /* الأنسر أصغر أكثر */
+    #oldEagle { width: 52px !important; opacity: 0.45 !important; }
+    #newEagle { width: 70px !important; opacity: 0.45 !important; }
+
+    .welcome-box    { padding: 18px 12px !important; }
+    .welcome-title  { font-size: 17px !important; }
+}
+
+/* ============================================
+   📱 EXTRA SMALL ≤ 360px  (Galaxy S8, SE...)
+============================================ */
+@media screen and (max-width: 360px) {
+
+    .main-content { padding: 8px 8px 18px !important; }
+    h1             { font-size: 15px !important; }
+    .input-group input { padding: 9px 10px !important; }
+    .btn-yousef-action { padding: 11px !important; font-size: 14px !important; }
+    .card           { max-width: 270px !important; }
+    .welcome-box    { width: 96% !important; padding: 16px 10px !important; }
+    .welcome-title  { font-size: 16px !important; }
+}
+
+/* ============================================
+   📟 TABLET  769px → 1024px
+============================================ */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .main-content   { gap: 24px !important; padding: 28px 16px !important; }
+    .container      { max-width: 440px !important; }
+    .card           { max-width: 295px !important; }
+    .tracking-nav-btn { max-width: 285px !important; }
+    .left-side > div[style] h2 { font-size: 19px !important; }
+}
+
+/* ── منع overflow أفقي دائماً ── */
+.container, .form-card, .left-side,
+.main-content, .card, .tracking-nav-btn {
+    max-width: 100vw;
+}
+
+/* ── تحسين اللمس (touch devices) ── */
+@media (hover: none) and (pointer: coarse) {
+    .tracking-nav-btn:hover,
+    .btn-yousef-action:hover { transform: none; }
+
+    .urgency-btn,
+    .btn-yousef-action,
+    .tracking-nav-btn,
+    .social-btn,
+    .welcome-btn { min-height: 44px; }
+}
+
+</style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+
+    <div id="loader-wrapper">
+        <div class="loader"></div>
+        <div class="loader-text">جاري حفظ المعاملة...</div>
+    </div>
+
+    <div class="eagles-isolation-layer">
+        <img src="YA.png" class="old-Eagle" id="oldEagle">
+        <img src="YA3.png" class="new-eagle" id="newEagle">
+    </div>
+
+    <div class="main-content">
+
+        <div class="container">
+            <div class="urgency-bar">
+                <button class="urgency-btn normal active" onclick="setMode('normal')">🕐 عادي</button>
+                <button class="urgency-btn urgent" onclick="setMode('urgent')">⚡ مستعجل</button>
+            </div>
+
+            <h1>لوحة تحكم المعاملات</h1>
+
+            <!-- الأزرار تُبنى تلقائياً من yousef.js -->
+            <div class="tabs"></div>
+
+            <div id="main-form" class="form-card">
+                <h2 id="form-title">معاملة: <span id="Transactions-name"></span> <span id="Transactions-price" style="color:red;font-weight:900;margin-right:15px;"></span></h2>
+                <form id="transactionForm">
+                    <div class="input-group">
+                        <label>:اسم طالب التسجيل</label>
+                        <input type="text" id="name" placeholder="الاسم الكامل">
+                    </div>
+                    <div class="input-group">
+                        <label>:اسم الأم</label>
+                        <input type="text" id="mother">
+                    </div>
+                    <div class="input-group">
+                        <label>:رقم الهوية الوطنية</label>
+                        <input type="number" id="national_id">
+                    </div>
+                    <div class="input-group">
+                        <label>:رقم القيد</label>
+                        <input type="text" id="registration_no">
+                    </div>
+                    <div class="input-group">
+                        <label>:رقم العقار</label>
+                        <input type="text" id="property_no">
+                    </div>
+                    <div class="input-group">
+                        <label>:المنظقة العقارية</label>
+                        <input type="text" id="location">
+                    </div>
+                    <button type="button" class="btn-yousef-action" onclick="saveData()">حفظ المعاملة</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="left-side">
+            <div style="text-align:center;color:white;margin-bottom:30px;text-shadow:2px 2px 8px rgba(0,0,0,0.8);">
+                <h2 style="font-family:sans-serif;font-size:26px;margin-bottom:5px;">"Your Gateway to Seamless Real Estate Transactions"</h2>
+                <p style="font-family:sans-serif;font-size:18px;opacity:0.9;">Fast • Secure • Reliable</p>
+            </div>
+
+            <div class="card">
+                <div class="circle-container">
+                    <div class="white-circle"></div>
+                    <img src="YA2.png" alt="YA Logo" class="logo" />
+                    <img src="s.png" alt="Official Stamp" class="product_img" />
+                </div>
+                <div class="content">
+                    <img src="yousef akkdeh.png" class="personal-img">
+                    <h2>Yousef Akddeh</h2>
+                    <p>خبير في تعقيب المعاملات العقارية وادارة البيانات بدقة احترافية</p>
+                    <a href="https://api.whatsapp.com/send?phone=963993237272" target="_blank">تواصل معي</a>
+                </div>
+            </div>
+
+            <!-- ===== زر تتبع المعاملة ===== -->
+            <a href="tracking.html" class="tracking-nav-btn">
+                <span class="tracking-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                        <path d="M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>
+                    </svg>
+                </span>
+                <span class="tracking-nav-text">
+                    <strong>تتبع المعاملة</strong>
+                    <small>تابع سير معاملتك لحظة بلحظة</small>
+                </span>
+                <span class="tracking-nav-arrow">←</span>
+                <span class="tracking-nav-pulse"></span>
+            </a>
+
+        </div>
+
+    </div>
+
+    <footer class="social-footer">
+        <div class="footer-inner">
+            <div class="footer-title">تواصل معي</div>
+            <div class="footer-line"></div>
+            <div class="social-links">
+                <a href="https://www.facebook.com/share/1CXd89Bt4R/" target="_blank" class="social-btn facebook">
+                    <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div>
+                    <span>فيسبوك</span>
+                </a>
+                <a href="https://www.instagram.com/haithamkallab?igsh=c2RjYXdvZzhqYWto" target="_blank" class="social-btn instagram">
+                    <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></div>
+                    <span>انستغرام</span>
+                </a>
+                <a href="tel:+963967728034" class="social-btn phone">
+                    <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                    <span>0967728034</span>
+                </a>
+            </div>
+            <p class="footer-copy">© 2026 Yousef Akddeh — جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+
+    <!-- زر أدمن مخفي -->
+    <div id="adminTrigger" onclick="goAdmin()" style="position:fixed;bottom:0;left:0;width:30px;height:30px;cursor:pointer;z-index:99999;opacity:0;"></div>
+
+    <!-- نافذة الترحيب -->
+    <div id="welcomeModal" class="welcome-overlay">
+        <div class="welcome-box">
+            <div class="welcome-icon">🏛️</div>
+            <h2 class="welcome-title">أهلاً وسهلاً بكم</h2>
+            <p class="welcome-text">مرحباً بكم في نظام تعقيب المعاملات العقارية<br>نسعى لتقديم أفضل خدمة بدقة واحترافية عالية</p>
+            <div class="welcome-line"></div>
+            <div class="welcome-icons">
+                <div class="w-icon"><div>⚡</div><span>سريع</span></div>
+                <div class="w-icon"><div>🔒</div><span>آمن</span></div>
+                <div class="w-icon"><div>✅</div><span>موثوق</span></div>
+            </div>
+            <button class="welcome-btn" onclick="closeWelcome()">ابدأ الآن 🚀</button>
+        </div>
+    </div>
+
+    <script src="yousef.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Permissions-Policy" content="clipboard-write=(self)">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إتمام الدفع - نظام يوسف</title>
+    <link rel="stylesheet" href="pay.css">
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/inter-ui@3.11.0/inter.min.css'>
+</head>
+<body>
+    
+
+   <div class="pay-container">
+    <div class="glow-border"></div> 
+    <h1>تأكيد المعاملة</h1>
+    <p class="description">يرجى مراجعة البيانات قبل إتمام عملية الدفع</p>
+
+    <div class="details-box">
+        <div class="detail-item">
+    <span>نوع الطلب:</span>
+    <span id="displayUrgencyMode">عادي 🕐</span>
+        </div>
+        
+        <div class="detail-item">
+            <span>اسم العميل:</span>
+            <span id="displayCustomerName">...</span>
+        </div>
+
+        <div class="detail-item">
+            <span>اسم الأم:</span>
+            <span id="displayCustomerMother">...</span>
+        </div>
+
+        <div class="detail-item">
+            <span>رقم الهوية:</span>
+            <span id="displayCustomerNationalId">...</span>
+        </div>
+
+        <div class="detail-item">
+            <span>رقم القيد:</span>
+            <span id="displayCustomerRegNo">...</span>
+        </div>
+
+        <div class="detail-item">
+            <span>رقم العقار:</span>
+            <span id="displayCustomerPropNo">...</span>
+        </div>
+
+        <div class="detail-item">
+            <span>المنطقة العقارية:</span>
+            <span id="displayCustomerLocation">...</span>
+        </div>
+
+        <div class="detail-item">
+            <span>نوع المعاملة:</span>
+            <span id="displayServiceType">بيان قيد</span>
+        </div>
+
+        <div class="detail-item total">
+            <span>المبلغ الإجمالي:</span>
+            <span id="displayTotalAmount">...</span> 
+        </div>
+
+        <button class="pay-btn" id="mainPayBtn">ادفع الآن</button>
+        <button class="btn-cancel" onclick="window.history.back()">إلغاء</button>
+    </div>
+   </div>
+
+   <!-- ✅ النافذة المنبثقة - كانت مفقودة! -->
+   <div id="paymentModal" class="payment-modal">
+    <div class="modal-content">
+        <h3>اختر وسيلة الدفع</h3>
+        <div class="payment-options">
+            <div class="option-card" onclick="startPayment('Syriatel Cash')">
+                <img src="sy.png" alt="Syriatel Cash">
+                <span>سيريتل كاش</span>
+            </div>
+            <div class="option-card" onclick="startPayment('Sham Cash')">
+                <img src="sham.png" alt="Sham Cash">
+                <span>شام كاش</span>
+            </div>
+            <div class="option-card" onclick="startPayment('STC Pay')">
+                <img src="stc.png" alt="STC Pay">
+                <span>STC Pay</span>
+            </div>
+        </div>
+        <button class="close-modal" onclick="closePaymentModal()">إلغاء</button>
+    </div>
+   </div>
+
+   <!-- ✅ أنيميشن الشاحنة -->
+   <div id="truckOverlay" style="display: none; position: fixed; inset: 0; background: rgba(11, 15, 25, 0.95); z-index: 10000; justify-content: center; align-items: center; flex-direction: column;">
+        <button class="truck-button" id="mainTruckBtn">
+            <span class="default">جاري معالجة طلبك...</span>
+            <span class="success">
+                تم تجهيز الطلب بنجاح
+                <svg viewBox="0 0 12 10">
+                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                </svg>
+            </span>
+            <div class="truck">
+                <div class="wheel"></div>
+                <div class="back"></div>
+                <div class="front"></div>
+                <div class="box"></div>
+            </div>
+        </button>
+        <p style="color: white; margin-top: 25px; font-family: 'Inter', Arial; letter-spacing: 1px;">يرجى الانتظار ثواني لتحويلك...</p>
+    </div>
+
+    <!-- ✅ السكريبتات بالترتيب الصحيح -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.0.1/dist/gsap.min.js"></script>
+    <script src="pay.js"></script>
+</body>
+</html>

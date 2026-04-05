@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - نظام يوسف</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+
+    <div class="login-box" id="loginBox">
+
+        <div class="logo-area">
+            <img src="YA2.png" alt="YA Logo">
+            <h2>نظام يوسف العقاري</h2>
+            <p>سجّل دخولك للمتابعة</p>
+        </div>
+
+        <div class="input-group">
+            <label>اسم المستخدم</label>
+            <div class="input-wrap">
+                <span class="icon">👤</span>
+                <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>كلمة السر</label>
+            <div class="input-wrap">
+                <span class="icon">🔒</span>
+                <input type="password" id="password" placeholder="أدخل كلمة السر">
+                <button class="toggle-pass" onclick="togglePass()">👁️</button>
+            </div>
+        </div>
+
+        <button class="login-btn" onclick="login()">دخول 🚀</button>
+        <button class="login-btn" onclick="window.location.href='/'" 
+style="background:transparent; border:1px solid rgba(0,210,255,0.4); margin-top:10px; color:#00d2ff;">
+    ← العودة للموقع
+</button>
+
+        <p class="footer-text">© 2025 Yousef Akddeh — جميع الحقوق محفوظة</p>
+
+    </div>
+    <script>
+
+async function loginUser() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+
+    const response = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, password: pass })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        window.location.href = '/admin.html'; // التوجيه للوحة التحكم
+    } else {
+        alert(result.message);
+    }
+}
+</script>
+
+    <script src="login.js"></script>
+</body>
+</html>

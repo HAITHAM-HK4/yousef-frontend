@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الأدمن - نظام يوسف</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0b0f19; color: white; min-height: 100vh; }
+
+        .admin-header {
+            background: rgba(0,210,255,0.05);
+            border-bottom: 1px solid rgba(0,210,255,0.2);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-header h1 { color: #00d2ff; font-size: 20px; }
+        .btn-logout { background: rgba(255,50,50,0.15); border: 1px solid rgba(255,50,50,0.4); color: #ff5555; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-logout:hover { background: #ff5555; color: white; }
+
+        .stats-bar { display: flex; gap: 20px; padding: 25px 30px; flex-wrap: wrap; }
+        .stat-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(0,210,255,0.15); border-radius: 15px; padding: 20px 30px; text-align: center; flex: 1; min-width: 150px; }
+        .stat-card .number { font-size: 36px; font-weight: 900; color: #00d2ff; }
+        .stat-card .label { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 5px; }
+
+        .section { padding: 20px 30px; }
+        .section-title { font-size: 18px; font-weight: bold; color: #00d2ff; margin-bottom: 15px; border-right: 4px solid #00d2ff; padding-right: 10px; }
+
+        .table-wrap { overflow-x: auto; border-radius: 15px; border: 1px solid rgba(0,210,255,0.15); }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        thead { background: rgba(0,210,255,0.1); }
+        th { padding: 14px 15px; text-align: right; color: #00d2ff; font-weight: 600; white-space: nowrap; }
+        td { padding: 12px 15px; border-top: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.85); white-space: nowrap; }
+        tr:hover td { background: rgba(0,210,255,0.04); }
+        .btn-delete { background: rgba(255,50,50,0.15); border: 1px solid rgba(255,50,50,0.3); color: #ff5555; padding: 5px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-delete:hover { background: #ff5555; color: white; }
+        .empty-msg { text-align: center; padding: 40px; color: rgba(255,255,255,0.3); font-size: 16px; }
+
+       /* تنظيم شبكة الأسعار */
+.prices-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+    gap: 20px; 
+    margin-top: 10px;
+}
+
+/* تنسيق كارت السعر */
+.price-card { 
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(0, 210, 255, 0.1); 
+    border-radius: 12px; 
+    padding: 15px; 
+}
+
+.urgent-border { border-color: rgba(255, 100, 0, 0.3) !important; }
+.urgent-btn { background: linear-gradient(135deg, #ff6400, #ff4400) !important; }
+
+/* إصلاح تباعد كروت الإدارة */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+        .price-card label { display: block; color: rgba(255,255,255,0.6); font-size: 13px; margin-bottom: 10px; }
+        .price-input-wrap { display: flex; gap: 10px; align-items: center; }
+        .price-card input { flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(0,210,255,0.3); border-radius: 8px; color: white; padding: 8px 12px; font-size: 15px; outline: none; width: 100%; }
+        .price-card input:focus { border-color: #00d2ff; }
+        .btn-save-price { background: linear-gradient(135deg,#00d2ff,#3a7bd5); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.3s; white-space: nowrap; }
+        .btn-save-price:hover { transform: translateY(-2px); }
+
+        .pass-form { background: rgba(255,255,255,0.04); border: 1px solid rgba(0,210,255,0.15); border-radius: 15px; padding: 25px; max-width: 400px; }
+        .pass-form input { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(0,210,255,0.3); border-radius: 8px; color: white; padding: 10px 15px; font-size: 14px; outline: none; margin-bottom: 12px; direction: ltr; }
+        .pass-form input::placeholder { color: rgba(255,255,255,0.3); }
+        .btn-save-pass { background: linear-gradient(135deg,#00d2ff,#3a7bd5); border: none; color: white; padding: 10px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s; width: 100%; }
+        .btn-save-pass:hover { transform: translateY(-2px); }
+
+        .divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 10px 0 25px; }
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-normal { background: rgba(37,211,102,0.15); color: #25d366; border: 1px solid rgba(37,211,102,0.3); }
+        .badge-urgent { background: rgba(255,100,0,0.15); color: #ff6400; border: 1px solid rgba(255,100,0,0.3); }
+
+        /* ===== إدارة الخدمات ===== */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 15px; margin-bottom: 20px; }
+        .service-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(0,210,255,0.15); border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 10px; transition: all 0.3s; }
+        .service-card.hidden-service { border-color: rgba(255,50,50,0.3); opacity: 0.6; }
+        .service-name { font-size: 15px; font-weight: bold; color: white; flex: 1; }
+        .service-actions { display: flex; gap: 8px; }
+        .btn-toggle { padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.3s; }
+        .btn-show { background: rgba(37,211,102,0.15); color: #25d366; border: 1px solid rgba(37,211,102,0.4); }
+        .btn-show:hover { background: #25d366; color: white; }
+        .btn-hide { background: rgba(255,100,0,0.15); color: #ff6400; border: 1px solid rgba(255,100,0,0.4); }
+        .btn-hide:hover { background: #ff6400; color: white; }
+        .btn-del-service { background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.3); color: #ff5555; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-del-service:hover { background: #ff5555; color: white; }
+add-service-form { 
+        background: rgba(0, 210, 255, 0.04); 
+        border: 1px dashed rgba(0, 210, 255, 0.3); 
+        border-radius: 14px; 
+        padding: 20px; 
+        display: flex; 
+        gap: 12px; 
+        align-items: center; 
+        flex-wrap: wrap; 
+        margin-bottom: 30px;
+    }
+
+    /* إجبار المربعات على اللون الغامق ومنع اللون الأبيض */
+    .add-service-form input { 
+        flex: 1; 
+        min-width: 150px; 
+        background-color: #1a1f2b !important; /* لون كحلي غامق جداً */
+        border: 1px solid rgba(0, 210, 255, 0.3) !important; 
+        border-radius: 8px !important; 
+        color: #ffffff !important; /* لون النص أبيض */
+        padding: 12px 14px !important; 
+        font-size: 14px !important; 
+        outline: none !important;
+        -webkit-box-shadow: 0 0 0px 1000px #1a1f2b inset !important; /* هذه السطر يقتل اللون الأبيض الناتج عن التعبئة التلقائية */
+        transition: all 0.3s;
+    }
+
+    /* لضمان ظهور كلمة "السعر المستعجل" */
+    .add-service-form input::placeholder { 
+        color: rgba(255, 255, 255, 0.5) !important; 
+        opacity: 1 !important;
+    }
+
+    /* تحسين شكل زر الإضافة */
+    .btn-add-service { 
+        background: linear-gradient(135deg, #00d2ff, #3a7bd5); 
+        border: none; 
+        color: white; 
+        padding: 12px 25px; 
+        border-radius: 8px; 
+        cursor: pointer; 
+        font-weight: bold; 
+        transition: 0.3s;
+    }
+    </style>
+</head>
+<body>
+
+    <div class="admin-header">
+        <h1>🛡️ لوحة الأدمن — نظام يوسف العقاري</h1>
+        <button class="btn-logout" onclick="logout()">🚪 تسجيل الخروج</button>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-card"><div class="number" id="totalOrders">0</div><div class="label">إجمالي الطلبات</div></div>
+        <div class="stat-card"><div class="number" id="todayOrders">0</div><div class="label">طلبات اليوم</div></div>
+        <div class="stat-card"><div class="number" id="urgentOrders">0</div><div class="label">طلبات مستعجلة</div></div>
+        <div class="stat-card"><div class="number" id="totalRevenue">0</div><div class="label">إجمالي الإيرادات SYP</div></div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+        <div class="section-title">📋 طلبات الزبائن</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>#</th><th>اسم العميل</th><th>اسم الأم</th><th>رقم الهوية</th><th>رقم القيد</th><th>رقم العقار</th><th>المنطقة</th><th>نوع المعاملة</th><th>نوع الطلب</th><th>المبلغ</th><th>التاريخ</th><th>حذف</th></tr></thead>
+                <tbody id="ordersTable"><tr><td colspan="12" class="empty-msg">لا توجد طلبات بعد</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- إدارة الخدمات -->
+    <div class="section">
+        <div class="section-title">⚙️ إدارة أنواع الخدمات</div>
+        <div class="services-grid" id="servicesGrid"></div>
+        <div class="add-service-form">
+            <input type="text"   id="newServiceName"        placeholder="اسم الخدمة الجديدة (مثال: سند تمليك)">
+            <input type="number" id="newServicePrice"       placeholder="السعر العادي">
+            <input type="number" id="newServiceUrgentPrice" placeholder="السعر المستعجل">
+            <button class="btn-add-service" onclick="addService()">➕ إضافة خدمة</button>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+        <div class="section-title">💰 تغيير الأسعار</div>
+        <p style="color:#25d366;margin-bottom:10px;font-size:14px;">🕐 أسعار عادي</p>
+        <div class="prices-grid" id="normalPricesGrid"></div>
+        <p style="color:#ff6400;margin:20px 0 10px;font-size:14px;">⚡ أسعار مستعجل</p>
+        <div class="prices-grid" id="urgentPricesGrid"></div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+        <div class="section-title">🔐 تغيير كلمة السر</div>
+        <div class="pass-form">
+            <input type="password" id="oldPass"     placeholder="كلمة السر الحالية">
+            <input type="password" id="newPass"     placeholder="كلمة السر الجديدة">
+            <input type="password" id="confirmPass" placeholder="تأكيد كلمة السر الجديدة">
+            <button class="btn-save-pass" onclick="changePass()">💾 حفظ كلمة السر</button>
+        </div>
+    </div>
+
+    <script>
+        
+       // ==============================
+// تحميل الإحصائيات
+// ==============================
+async function updateStats() {
+    try {
+        const res = await fetch('https://haithamhk.pythonanywhere.com/stats');
+        const data = await res.json();
+        document.getElementById('totalOrders').innerText  = data.totalOrders;
+        document.getElementById('todayOrders').innerText  = data.todayOrders;
+        document.getElementById('urgentOrders').innerText = data.urgentOrders;
+        document.getElementById('totalRevenue').innerText = Number(data.totalRevenue).toLocaleString();
+    } catch(e) {
+        console.error('خطأ في تحميل الإحصائيات');
+    }
+}
+
+// ==============================
+// تحميل الطلبات
+// ==============================
+async function loadOrders() {
+    try {
+     const res = await fetch('https://haithamhk.pythonanywhere.com/orders');
+        const orders = await res.json();
+        const tbody = document.getElementById('ordersTable');
+
+        if (!orders.length) {
+            tbody.innerHTML = '<tr><td colspan="12" class="empty-msg">لا توجد طلبات بعد</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = orders.map((o, i) => `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${o.name}</td>
+                <td>${o.mother_name}</td>
+                <td>${o.national_id}</td>
+                <td>${o.reg_no}</td>
+                <td>${o.property_no}</td>
+                <td>${o.region}</td>
+                <td>${o.service_type}</td>
+                <td><span class="badge ${o.urgency === 'مستعجل ⚡' ? 'badge-urgent' : 'badge-normal'}">${o.urgency || 'عادي 🕐'}</span></td>
+                <td>${Number(o.price).toLocaleString()} SYP</td>
+                <td>${new Date(o.date).toLocaleDateString('ar-EG')}</td>
+                <td><button class="btn-delete" onclick="deleteOrder(${o.id})">🗑️ حذف</button></td>
+            </tr>`).join('');
+    } catch(e) {
+        console.error('خطأ في تحميل الطلبات');
+    }
+}
+
+// ==============================
+// حذف طلب
+// ==============================
+async function deleteOrder(id) {
+    Swal.fire({
+        title: 'هل أنت متأكد؟',
+        text: 'سيتم حذف هذا الطلب نهائياً',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff4444',
+        cancelButtonColor: '#00d2ff',
+        confirmButtonText: 'نعم، احذفه',
+        cancelButtonText: 'إلغاء',
+        background: 'rgba(15,20,35,0.95)',
+        color: 'white'
+    }).then(async r => {
+        if (r.isConfirmed) {
+       const res = await fetch('https://haithamhk.pythonanywhere.com/orders/' + id, { method: 'DELETE' });
+            const result = await res.json();
+            if (result.success) {
+                loadOrders();
+                updateStats();
+                Swal.fire({ icon: 'success', title: 'تم الحذف', timer: 1000, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
+            }
+        }
+    });
+}
+
+// ==============================
+// تحميل الخدمات
+// ==============================
+async function loadServices() {
+    try {
+const res = await fetch('https://haithamhk.pythonanywhere.com/services');
+        const services = await res.json();
+        
+        // حفظ نسخة احتياطية في متصفحك أنت
+        localStorage.setItem('my_services', JSON.stringify(services));
+        
+        renderServices(services);
+    } catch (error) {
+        console.log("السيرفر لم يرد، سأعرض البيانات المحفوظة سابقاً");
+        const backup = localStorage.getItem('my_services');
+        if (backup) renderServices(JSON.parse(backup));
+    }
+}
+
+function renderServices(services) {
+    // 1. رسم قائمة إدارة الخدمات (التي تعمل عندك الآن)
+    const grid = document.getElementById('servicesGrid');
+    if (grid) {
+        grid.innerHTML = services.map(s => `
+            <div class="service-card ${!s.visible ? 'hidden-service' : ''}">
+                <span class="status-dot ${s.visible ? 'dot-visible' : 'dot-hidden'}"></span>
+                <span class="service-name">${s.name}</span>
+                <div class="service-actions">
+                    <button class="btn-toggle ${s.visible ? 'btn-hide' : 'btn-show'}" onclick="toggleService(${s.id}, ${s.visible})">
+                        ${s.visible ? '🙈 إخفاء' : '👁️ إظهار'}
+                    </button>
+                    <button class="btn-del-service" onclick="deleteService(${s.id}, '${s.name}')">🗑️</button>
+                </div>
+            </div>`).join('');
+    }
+
+    // 2. رسم جدول الأسعار العادية
+    const normalGrid = document.getElementById('normalPricesGrid');
+    if (normalGrid) {
+        normalGrid.innerHTML = services.map(s => `
+            <div class="price-card">
+                <label>${s.name} (عادي)</label>
+                <div class="price-input-wrap">
+                    <input type="number" id="price_${s.id}" value="${s.price_normal}">
+                    <button class="btn-save-price" onclick="savePrice(${s.id}, 'normal')">حفظ</button>
+                </div>
+            </div>`).join('');
+    }
+
+    // 3. رسم جدول الأسعار المستعجلة
+    const urgentGrid = document.getElementById('urgentPricesGrid');
+    if (urgentGrid) {
+        urgentGrid.innerHTML = services.map(s => `
+            <div class="price-card" style="border-color:rgba(255,100,0,0.3);">
+                <label>${s.name} (مستعجل)</label>
+                <div class="price-input-wrap">
+                    <input type="number" id="price_${s.id}_urgent" value="${s.price_urgent}">
+                    <button class="btn-save-price" style="background:linear-gradient(135deg,#ff6400,#ff4400);" onclick="savePrice(${s.id}, 'urgent')">حفظ</button>
+                </div>
+            </div>`).join('');
+    }
+}
+
+function renderPricesGrids(services) {
+    const normalGrid  = document.getElementById('normalPricesGrid');
+    const urgentGrid  = document.getElementById('urgentPricesGrid');
+    if (!normalGrid || !urgentGrid) return;
+
+    normalGrid.innerHTML = services.map(s => `
+        <div class="price-card">
+            <label>${s.name} (عادي)</label>
+            <div class="price-input-wrap">
+                <input type="number" id="price_${s.id}" value="${s.price_normal}">
+                <button class="btn-save-price" onclick="savePrice(${s.id}, 'normal')">حفظ</button>
+            </div>
+        </div>`).join('');
+
+    urgentGrid.innerHTML = services.map(s => `
+        <div class="price-card" style="border-color:rgba(255,100,0,0.3);">
+            <label>${s.name} (مستعجل)</label>
+            <div class="price-input-wrap">
+                <input type="number" id="price_${s.id}_urgent" value="${s.price_urgent}">
+                <button class="btn-save-price" style="background:linear-gradient(135deg,#ff6400,#ff4400);" onclick="savePrice(${s.id}, 'urgent')">حفظ</button>
+            </div>
+        </div>`).join('');
+}
+
+async function savePrice(id, type) {
+    const inputId = type === 'urgent' ? `price_${id}_urgent` : `price_${id}`;
+    const val = document.getElementById(inputId).value;
+    if (!val || isNaN(val)) {
+        Swal.fire({ icon: 'warning', title: 'أدخل رقماً صحيحاً', timer: 1500, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
+        return;
+    }
+
+    // جلب القيم الحالية أولاً
+const res = await fetch('https://haithamhk.pythonanywhere.com/services');
+    const services = await res.json();
+    const service = services.find(s => s.id === id);
+    if (!service) return;
+
+    const body = {
+        name: service.name,
+        price_normal:  type === 'normal'  ? parseInt(val) : service.price_normal,
+        price_urgent:  type === 'urgent'  ? parseInt(val) : service.price_urgent,
+        visible: service.visible
+    };
+
+    await fetch('https://haithamhk.pythonanywhere.com/services/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    Swal.fire({ icon: 'success', title: 'تم حفظ السعر ✅', timer: 1200, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
+}
+
+async function toggleService(id, currentVisible) {
+const res = await fetch('https://haithamhk.pythonanywhere.com/stats');
+    const services = await res.json();
+    const service = services.find(s => s.id === id);
+    if (!service) return;
+
+    await fetch('https://haithamhk.pythonanywhere.com/services/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...service, visible: currentVisible ? 0 : 1 })
+    });
+
+    loadServices();
+    Swal.fire({ icon: 'success', title: currentVisible ? 'تم الإخفاء 🙈' : 'تم الإظهار ✅', timer: 1000, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
+}
+
+async function deleteService(id, name) {
+    Swal.fire({
+        title: 'حذف ' + name + '؟', text: 'سيتم حذفها نهائياً', icon: 'warning',
+        showCancelButton: true, confirmButtonColor: '#ff4444', cancelButtonColor: '#00d2ff',
+        confirmButtonText: 'نعم احذفها', cancelButtonText: 'إلغاء',
+        background: 'rgba(15,20,35,0.95)', color: 'white'
+    }).then(async r => {
+        if (r.isConfirmed) {
+           await fetch('https://haithamhk.pythonanywhere.com/services/' + id, { method: 'DELETE' });
+            loadServices();
+            Swal.fire({ icon: 'success', title: 'تم الحذف', timer: 1000, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
+        }
+    });
+}
+
+async function addService() {
+    const name  = document.getElementById('newServiceName').value.trim();
+    const price = document.getElementById('newServicePrice').value;
+    const urgP  = document.getElementById('newServiceUrgentPrice').value;
+
+    if (!name || !price || !urgP) {
+        Swal.fire({ icon: 'warning', title: 'أكمل جميع الحقول', background: 'rgba(15,20,35,0.95)', color: 'white' });
+        return;
+    }
+
+  await fetch('https://haithamhk.pythonanywhere.com/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, price_normal: parseInt(price), price_urgent: parseInt(urgP) })
+    });
+
+    document.getElementById('newServiceName').value = '';
+    document.getElementById('newServicePrice').value = '';
+    document.getElementById('newServiceUrgentPrice').value = '';
+    loadServices();
+    Swal.fire({ icon: 'success', title: 'تمت الإضافة ✅', timer: 1200, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
+}
+
+// ==============================
+// تغيير كلمة السر
+// ==============================
+async function changePass() {
+    const op = document.getElementById('oldPass').value;
+    const np = document.getElementById('newPass').value;
+    const cp = document.getElementById('confirmPass').value;
+
+    if (!op || !np || !cp) {
+        Swal.fire({ icon: 'warning', title: 'أكمل جميع الحقول', background: 'rgba(15,20,35,0.95)', color: 'white' });
+        return;
+    }
+    if (np !== cp) {
+        Swal.fire({ icon: 'error', title: 'كلمة السر غير متطابقة', background: 'rgba(15,20,35,0.95)', color: 'white' });
+        return;
+    }
+
+const res = await fetch('https://haithamhk.pythonanywhere.com/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldPass: op, newPass: np })
+    });
+    const result = await res.json();
+
+    if (result.success) {
+        Swal.fire({ icon: 'success', title: 'تم تغيير كلمة السر ✅', timer: 1500, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
+        document.getElementById('oldPass').value = '';
+        document.getElementById('newPass').value = '';
+        document.getElementById('confirmPass').value = '';
+    } else {
+        Swal.fire({ icon: 'error', title: 'خطأ', text: result.message, background: 'rgba(15,20,35,0.95)', color: 'white' });
+    }
+}
+
+// ==============================
+// تسجيل الخروج
+// ==============================
+function logout() {
+    Swal.fire({
+        title: 'تسجيل الخروج؟', icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#ff4444',
+        cancelButtonColor: '#00d2ff',
+        confirmButtonText: 'نعم',
+        cancelButtonText: 'إلغاء',
+        background: 'rgba(15,20,35,0.95)',
+        color: 'white'
+    }).then(r => {
+        if (r.isConfirmed) {
+            localStorage.removeItem('loggedIn');
+            window.location.href = '/login.html';
+        }
+    });
+}
+
+// ==============================
+// تشغيل كل شيء عند فتح الصفحة
+// ==============================
+updateStats();
+loadOrders();
+loadServices();
+    </script>
+
+    <hr class="divider">
+
+    <!-- ===== قسم تتبع المعاملات ===== -->
+    <div class="section">
+        <div class="section-title">🗺️ تتبع المعاملات</div>
+
+        <!-- قائمة المعاملات النشطة -->
+        <div id="activeTrackingList" style="display:flex;flex-direction:column;gap:15px;margin-bottom:20px;"></div>
+
+        <!-- زر إضافة معاملة جديدة -->
+        <button onclick="showAddTrackingForm()" id="addTrackingBtn"
+            style="background:linear-gradient(135deg,#00d2ff,#3a7bd5);border:none;color:white;padding:12px 25px;border-radius:12px;cursor:pointer;font-size:15px;font-weight:bold;display:flex;align-items:center;gap:8px;">
+            ➕ إضافة معاملة جديدة
+        </button>
+
+        <!-- فورم إضافة معاملة -->
+        <div id="addTrackingForm" style="display:none;margin-top:15px;background:rgba(0,210,255,0.04);border:1px dashed rgba(0,210,255,0.3);border-radius:14px;padding:20px;">
+            <p style="color:rgba(255,255,255,0.6);margin-bottom:12px;font-size:14px;">أدخل رقم العقار للمعاملة الجديدة:</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                <input type="text" id="newTrackingInput"
+                    placeholder="مثال: 345 أو 345/2"
+                    oninput="this.value=this.value.replace(/[^0-9/]/g,'')"
+                    style="background:rgba(255,255,255,0.08);border:1px solid rgba(0,210,255,0.3);border-radius:10px;padding:10px 15px;color:white;font-size:14px;width:220px;outline:none;direction:rtl;">
+                <button onclick="createTracking()"
+                    style="background:linear-gradient(135deg,#00d2ff,#3a7bd5);border:none;color:white;padding:10px 22px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:bold;">
+                    ✓ إنشاء
+                </button>
+                <button onclick="document.getElementById('addTrackingForm').style.display='none'"
+                    style="background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);color:#ff5555;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:14px;">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const BACKEND_URL = 'https://haithamhk.pythonanywhere.com';
+
+    const STEP_TITLES = [
+        'تسجيل ديوان المالية','إيرادات المالية','دخل مقطوع','أرباح حقيقية',
+        'قصر تصرف','البصمة مالياً','موافقة أمنية','دراسة المراقب',
+        'ضريبة البيوع','تدقيق رئيس الشعبة','جباية الذمة','طباعة العقد',
+        'دراسة توثيق رئيس الشعبة','تصحيح المعاملة','ضريبة البيوع عقارياً','البصمة عقارياً'
+    ];
+
+    // ===== تحميل كل المعاملات عند الفتح =====
+    async function loadAllTracking() {
+        try {
+            const res  = await fetch(`${BACKEND_URL}/tracking`);
+            const list = await res.json();
+            renderTrackingList(list);
+        } catch(e) { console.error('خطأ في تحميل التتبع', e); }
+    }
+
+    function renderTrackingList(list) {
+        const container = document.getElementById('activeTrackingList');
+        container.innerHTML = '';
+        if (!list.length) {
+            container.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-size:14px;">لا توجد معاملات بعد</p>';
+            return;
+        }
+        list.forEach(item => {
+            const div = document.createElement('div');
+            div.style.cssText = 'background:rgba(255,255,255,0.03);border:1px solid rgba(0,210,255,0.15);border-radius:14px;overflow:hidden;';
+            div.id = `tracking-card-${item.property_no.replace('/','-')}`;
+
+            const steps   = item.steps || [];
+            const done    = steps.filter(s => s.status === 'completed').length;
+            const pct     = Math.round((done / 16) * 100);
+            const inProg  = steps.find(s => s.status === 'in-progress');
+            const current = inProg ? STEP_TITLES[inProg.id - 1] : (done === 16 ? 'مكتملة ✅' : '—');
+
+            div.innerHTML = `
+                <div style="padding:15px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;cursor:pointer;"
+                     onclick="toggleTrackingCard('${item.property_no}')">
+                    <div style="display:flex;align-items:center;gap:15px;">
+                        <span style="color:#00d2ff;font-weight:bold;font-size:16px;">🏠 ${item.property_no}</span>
+                        <span style="color:rgba(255,255,255,0.5);font-size:13px;">${done}/16 خطوة</span>
+                        <span style="background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.2);color:#00d2ff;padding:2px 10px;border-radius:20px;font-size:12px;">${pct}%</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="color:rgba(255,255,255,0.4);font-size:12px;">الحالية: ${current}</span>
+                        <button onclick="event.stopPropagation();deleteTracking('${item.property_no}')"
+                            style="background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);color:#ff5555;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:13px;">
+                            🗑️ حذف
+                        </button>
+                        <span style="color:rgba(255,255,255,0.3);font-size:18px;" id="arrow-${item.property_no.replace('/','-')}">▼</span>
+                    </div>
+                </div>
+                <div id="steps-${item.property_no.replace('/','-')}" style="display:none;padding:0 20px 20px;">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;">
+                        ${steps.map(step => renderStepCard(step, item.property_no)).join('')}
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function renderStepCard(step, propNo) {
+        const title      = STEP_TITLES[step.id - 1];
+        const isComp     = step.status === 'completed';
+        const isProgress = step.status === 'in-progress';
+        const border     = isComp ? 'rgba(37,211,102,0.4)' : isProgress ? 'rgba(0,210,255,0.4)' : 'rgba(255,255,255,0.08)';
+        const bg         = isComp ? 'rgba(37,211,102,0.08)' : isProgress ? 'rgba(0,210,255,0.08)' : 'rgba(255,255,255,0.03)';
+        const badge      = isComp
+            ? '<span style="background:rgba(37,211,102,0.2);color:#25d366;border:1px solid rgba(37,211,102,0.4);padding:2px 8px;border-radius:20px;font-size:11px;">✓ مكتمل</span>'
+            : isProgress
+            ? '<span style="background:rgba(0,210,255,0.15);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);padding:2px 8px;border-radius:20px;font-size:11px;">⏳ جارٍ</span>'
+            : '<span style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.08);padding:2px 8px;border-radius:20px;font-size:11px;">انتظار</span>';
+        const safeId = propNo.replace('/','-');
+        return `
+            <div style="background:${bg};border:1px solid ${border};border-radius:10px;padding:12px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                    <span style="color:rgba(255,255,255,0.35);font-size:11px;">#${step.id}</span>
+                    ${badge}
+                </div>
+                <div style="color:white;font-size:13px;font-weight:bold;margin-bottom:8px;">${title}</div>
+                <div style="display:flex;gap:5px;">
+                    <button onclick="updateStep('${propNo}',${step.id},'completed')"
+                        style="flex:1;background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);color:#25d366;padding:4px 6px;border-radius:6px;cursor:pointer;font-size:11px;">✓</button>
+                    <button onclick="updateStep('${propNo}',${step.id},'in-progress')"
+                        style="flex:1;background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.3);color:#00d2ff;padding:4px 6px;border-radius:6px;cursor:pointer;font-size:11px;">⏳</button>
+                    <button onclick="updateStep('${propNo}',${step.id},'pending')"
+                        style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:4px 6px;border-radius:6px;cursor:pointer;font-size:11px;">✕</button>
+                </div>
+            </div>`;
+    }
+
+    function toggleTrackingCard(propNo) {
+        const safeId  = propNo.replace('/','-');
+        const content = document.getElementById(`steps-${safeId}`);
+        const arrow   = document.getElementById(`arrow-${safeId}`);
+        if (!content) return;
+        const isOpen = content.style.display !== 'none';
+        content.style.display = isOpen ? 'none' : 'block';
+        if (arrow) arrow.textContent = isOpen ? '▼' : '▲';
+    }
+
+    function showAddTrackingForm() {
+        document.getElementById('addTrackingForm').style.display = 'block';
+        document.getElementById('newTrackingInput').focus();
+    }
+
+    async function createTracking() {
+        const val = document.getElementById('newTrackingInput').value.trim();
+        if (!val) return;
+        const regex = /^[0-9]+(\/[0-9]+)?$/;
+        if (!regex.test(val)) {
+            Swal.fire({ icon:'warning', title:'رقم غير صحيح', text:'أرقام فقط مثل 345 أو 345/2', background:'rgba(15,20,35,0.95)', color:'white' });
+            return;
+        }
+        const defaultSteps = Array.from({length:16}, (_,i) => ({
+            id: i+1, status: i===0 ? 'in-progress' : 'pending', date: null
+        }));
+        try {
+            const res  = await fetch(`${BACKEND_URL}/tracking`, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ property_no: val, steps: defaultSteps })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('newTrackingInput').value = '';
+                document.getElementById('addTrackingForm').style.display = 'none';
+                loadAllTracking();
+            } else {
+                Swal.fire({ icon:'error', title:'خطأ', text: data.message || 'حدث خطأ', background:'rgba(15,20,35,0.95)', color:'white' });
+            }
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'خطأ في الاتصال', background:'rgba(15,20,35,0.95)', color:'white' });
+        }
+    }
+
+    async function updateStep(propNo, stepId, status) {
+        try {
+            const res  = await fetch(`${BACKEND_URL}/tracking/${encodeURIComponent(propNo)}/step`, {
+                method:'PUT', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ stepId, status })
+            });
+            const data = await res.json();
+            if (data.success) loadAllTracking();
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'خطأ في التحديث', background:'rgba(15,20,35,0.95)', color:'white' });
+        }
+    }
+
+    async function deleteTracking(propNo) {
+        const conf = await Swal.fire({
+            title: 'حذف المعاملة؟', text: `رقم العقار: ${propNo}`,
+            icon:'warning', showCancelButton:true,
+            confirmButtonColor:'#ff4444', cancelButtonColor:'#00d2ff',
+            confirmButtonText:'حذف', cancelButtonText:'إلغاء',
+            background:'rgba(15,20,35,0.95)', color:'white'
+        });
+        if (!conf.isConfirmed) return;
+        try {
+            await fetch(`${BACKEND_URL}/tracking/${encodeURIComponent(propNo)}`, { method:'DELETE' });
+            loadAllTracking();
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'خطأ في الحذف', background:'rgba(15,20,35,0.95)', color:'white' });
+        }
+    }
+
+    // تحميل المعاملات عند الفتح
+    loadAllTracking();
+    </script>
+
+</body>
+</html>
