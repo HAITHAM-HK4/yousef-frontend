@@ -9,7 +9,7 @@ let currentServiceId = null;
 // ===== تحميل الخدمات من السيرفر =====
 async function loadServicesFromServer() {
     try {
-const res = await fetch('https://haithamhk.pythonanywhere.com/services');
+const res = await fetch('https://yousefakkdeh.pythonanywhere.com/services');
         allServices = await res.json();
         loadTabs();
     } catch(err) {

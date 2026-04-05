@@ -25,7 +25,7 @@ async function login() {
         return;
     }
 
-    try {const response = await fetch('https://haithamhk.pythonanywhere.com/login', {
+    try {const response = await fetch('https://yousefakkdeh.pythonanywhere.com/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: user, password: pass })

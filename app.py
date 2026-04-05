@@ -1,63 +1,56 @@
 import json
 import os
+import sqlite3
 from datetime import datetime
-from functools import wraps
 
 import bcrypt
-import mysql.connector
-from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask import Flask, g, jsonify, request
+
+try:
+    from flask_cors import CORS
+except ImportError:
+    class CORS:
+        def __init__(self, app, **kwargs): pass
 
 app = Flask(__name__)
 CORS(app, origins="*")
 
-# ══════════════════════════════════════════
-# 🔌 اتصال قاعدة البيانات
-# ══════════════════════════════════════════
+DB_PATH = os.path.join(os.path.dirname(__file__), 'yousef.db')
+
+
 def get_db():
-    return mysql.connector.connect(
-        host=os.environ.get("MYSQL_HOST", "haithamhk.mysql.pythonanywhere-services.com"),
-        user=os.environ.get("MYSQL_USER", "haithamhk"),
-        password=os.environ.get("MYSQL_PASSWORD", ""),
-        database=os.environ.get("MYSQL_DATABASE", "haithamhk$yousef"),
-        charset="utf8mb4",
-    )
+    db = sqlite3.connect(DB_PATH)
+    db.row_factory = sqlite3.Row
+    return db
 
 
-# ══════════════════════════════════════════
-# 🏗️ إنشاء الجداول عند التشغيل
-# ══════════════════════════════════════════
 def init_db():
     db = get_db()
     cur = db.cursor()
 
-    # جدول المستخدمين
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            id       INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(100) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL
+            id       INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
         )
     """)
 
-    # أضف أدمن افتراضي إن لم يكن موجوداً
     cur.execute("SELECT id FROM users WHERE username = 'admin'")
     if not cur.fetchone():
         hashed = bcrypt.hashpw(b"admin123", bcrypt.gensalt()).decode()
-        cur.execute("INSERT INTO users (username, password) VALUES ('admin', %s)", (hashed,))
+        cur.execute("INSERT INTO users (username, password) VALUES ('admin', ?)", (hashed,))
 
-    # جدول الخدمات
     cur.execute("""
         CREATE TABLE IF NOT EXISTS services (
-            id           INT AUTO_INCREMENT PRIMARY KEY,
-            name         VARCHAR(200) NOT NULL,
-            price_normal DECIMAL(15,2) DEFAULT 0,
-            price_urgent DECIMAL(15,2) DEFAULT 0,
-            visible      TINYINT(1)   DEFAULT 1
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            name         TEXT NOT NULL,
+            price_normal REAL DEFAULT 0,
+            price_urgent REAL DEFAULT 0,
+            visible      INTEGER DEFAULT 1
         )
     """)
 
-    # خدمات افتراضية
     cur.execute("SELECT COUNT(*) FROM services")
     if cur.fetchone()[0] == 0:
         default_services = [
@@ -69,45 +62,40 @@ def init_db():
             ("توكيل عقاري",     80000,  120000),
         ]
         cur.executemany(
-            "INSERT INTO services (name, price_normal, price_urgent) VALUES (%s, %s, %s)",
+            "INSERT INTO services (name, price_normal, price_urgent) VALUES (?, ?, ?)",
             default_services
         )
 
-    # جدول الطلبات
     cur.execute("""
         CREATE TABLE IF NOT EXISTS orders (
-            id           INT AUTO_INCREMENT PRIMARY KEY,
-            name         VARCHAR(200),
-            mother       VARCHAR(200),
-            national_id  VARCHAR(50),
-            registration_no VARCHAR(100),
-            property_no  VARCHAR(100),
-            location     VARCHAR(200),
-            service_type VARCHAR(200),
-            price        DECIMAL(15,2),
-            urgent       TINYINT(1) DEFAULT 0,
-            created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            name            TEXT,
+            mother          TEXT,
+            national_id     TEXT,
+            registration_no TEXT,
+            property_no     TEXT,
+            location        TEXT,
+            service_type    TEXT,
+            price           REAL,
+            urgent          INTEGER DEFAULT 0,
+            created_at      TEXT DEFAULT (datetime('now'))
         )
     """)
 
-    # جدول التتبع
     cur.execute("""
         CREATE TABLE IF NOT EXISTS tracking (
-            property_no  VARCHAR(100) PRIMARY KEY,
-            steps        LONGTEXT,
-            created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            property_no TEXT PRIMARY KEY,
+            steps       TEXT,
+            created_at  TEXT DEFAULT (datetime('now')),
+            updated_at  TEXT DEFAULT (datetime('now'))
         )
     """)
 
     db.commit()
-    cur.close()
     db.close()
 
 
-# ══════════════════════════════════════════
-# 🔐 تسجيل الدخول
-# ══════════════════════════════════════════
+# ══ تسجيل الدخول ══
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -118,10 +106,7 @@ def login():
         return jsonify({"success": False, "message": "أدخل اسم المستخدم وكلمة السر"})
 
     db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-    user = cur.fetchone()
-    cur.close()
+    user = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
     db.close()
 
     if not user:
@@ -133,66 +118,56 @@ def login():
     return jsonify({"success": False, "message": "كلمة السر غير صحيحة"})
 
 
-# ══════════════════════════════════════════
-# 🔑 تغيير كلمة السر
-# ══════════════════════════════════════════
+# ══ تغيير كلمة السر ══
 @app.route("/change-password", methods=["POST"])
 def change_password():
     data = request.get_json()
-    username    = data.get("username", "").strip()
-    old_pass    = data.get("oldPassword", "").strip()
-    new_pass    = data.get("newPassword", "").strip()
+    username = data.get("username", "").strip()
+    old_pass = data.get("oldPassword", "").strip()
+    new_pass = data.get("newPassword", "").strip()
 
     db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-    user = cur.fetchone()
+    user = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
 
     if not user or not bcrypt.checkpw(old_pass.encode(), user["password"].encode()):
-        cur.close(); db.close()
+        db.close()
         return jsonify({"success": False, "message": "كلمة السر القديمة غير صحيحة"})
 
     hashed = bcrypt.hashpw(new_pass.encode(), bcrypt.gensalt()).decode()
-    cur.execute("UPDATE users SET password = %s WHERE username = %s", (hashed, username))
+    db.execute("UPDATE users SET password = ? WHERE username = ?", (hashed, username))
     db.commit()
-    cur.close(); db.close()
+    db.close()
     return jsonify({"success": True, "message": "تم تغيير كلمة السر"})
 
 
-# ══════════════════════════════════════════
-# 📋 الخدمات
-# ══════════════════════════════════════════
+# ══ الخدمات ══
 @app.route("/services", methods=["GET"])
 def get_services():
     db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("SELECT * FROM services ORDER BY id")
-    services = cur.fetchall()
-    cur.close(); db.close()
-    return jsonify(services)
+    rows = db.execute("SELECT * FROM services ORDER BY id").fetchall()
+    db.close()
+    return jsonify([dict(r) for r in rows])
 
 
 @app.route("/services/<int:sid>", methods=["PUT"])
 def update_service(sid):
     data = request.get_json()
     db = get_db()
-    cur = db.cursor()
-    cur.execute(
-        "UPDATE services SET name=%s, price_normal=%s, price_urgent=%s, visible=%s WHERE id=%s",
+    db.execute(
+        "UPDATE services SET name=?, price_normal=?, price_urgent=?, visible=? WHERE id=?",
         (data.get("name"), data.get("price_normal"), data.get("price_urgent"), data.get("visible", 1), sid)
     )
     db.commit()
-    cur.close(); db.close()
+    db.close()
     return jsonify({"success": True})
 
 
 @app.route("/services/<int:sid>", methods=["DELETE"])
 def delete_service(sid):
     db = get_db()
-    cur = db.cursor()
-    cur.execute("DELETE FROM services WHERE id = %s", (sid,))
+    db.execute("DELETE FROM services WHERE id = ?", (sid,))
     db.commit()
-    cur.close(); db.close()
+    db.close()
     return jsonify({"success": True})
 
 
@@ -200,84 +175,63 @@ def delete_service(sid):
 def add_service():
     data = request.get_json()
     db = get_db()
-    cur = db.cursor()
-    cur.execute(
-        "INSERT INTO services (name, price_normal, price_urgent, visible) VALUES (%s,%s,%s,%s)",
+    db.execute(
+        "INSERT INTO services (name, price_normal, price_urgent, visible) VALUES (?,?,?,?)",
         (data.get("name"), data.get("price_normal", 0), data.get("price_urgent", 0), data.get("visible", 1))
     )
     db.commit()
-    cur.close(); db.close()
+    db.close()
     return jsonify({"success": True})
 
 
-# ══════════════════════════════════════════
-# 📦 الطلبات
-# ══════════════════════════════════════════
+# ══ الطلبات ══
 @app.route("/orders", methods=["GET"])
 def get_orders():
     db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("SELECT * FROM orders ORDER BY created_at DESC")
-    orders = cur.fetchall()
-    cur.close(); db.close()
-    # تحويل datetime لـ string
-    for o in orders:
-        if o.get("created_at"):
-            o["created_at"] = o["created_at"].strftime("%Y-%m-%d %H:%M:%S")
-    return jsonify(orders)
+    rows = db.execute("SELECT * FROM orders ORDER BY created_at DESC").fetchall()
+    db.close()
+    return jsonify([dict(r) for r in rows])
 
 
 @app.route("/orders", methods=["POST"])
 def add_order():
     data = request.get_json()
     db = get_db()
-    cur = db.cursor()
-    cur.execute("""
+    db.execute("""
         INSERT INTO orders
             (name, mother, national_id, registration_no, property_no, location, service_type, price, urgent)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        VALUES (?,?,?,?,?,?,?,?,?)
     """, (
         data.get("name"), data.get("mother"), data.get("national_id"),
         data.get("registration_no"), data.get("property_no"), data.get("location"),
         data.get("service_type"), data.get("price"), data.get("urgent", 0)
     ))
     db.commit()
-    cur.close(); db.close()
+    db.close()
     return jsonify({"success": True, "message": "تم حفظ الطلب"})
 
 
 @app.route("/orders/<int:oid>", methods=["DELETE"])
 def delete_order(oid):
     db = get_db()
-    cur = db.cursor()
-    cur.execute("DELETE FROM orders WHERE id = %s", (oid,))
+    db.execute("DELETE FROM orders WHERE id = ?", (oid,))
     db.commit()
-    cur.close(); db.close()
+    db.close()
     return jsonify({"success": True})
 
 
-# ══════════════════════════════════════════
-# 📊 الإحصائيات
-# ══════════════════════════════════════════
+# ══ الإحصائيات ══
 @app.route("/stats", methods=["GET"])
 def get_stats():
     db = get_db()
-    cur = db.cursor(dictionary=True)
-
-    cur.execute("SELECT COUNT(*) AS total FROM orders")
-    total = cur.fetchone()["total"]
-
     today = datetime.now().strftime("%Y-%m-%d")
-    cur.execute("SELECT COUNT(*) AS today FROM orders WHERE DATE(created_at) = %s", (today,))
-    today_count = cur.fetchone()["today"]
 
-    cur.execute("SELECT COUNT(*) AS urgent FROM orders WHERE urgent = 1")
-    urgent = cur.fetchone()["urgent"]
+    total       = db.execute("SELECT COUNT(*) FROM orders").fetchone()[0]
+    today_count = db.execute("SELECT COUNT(*) FROM orders WHERE date(created_at) = ?", (today,)).fetchone()[0]
+    urgent      = db.execute("SELECT COUNT(*) FROM orders WHERE urgent = 1").fetchone()[0]
+    revenue     = db.execute("SELECT COALESCE(SUM(price), 0) FROM orders").fetchone()[0]
 
-    cur.execute("SELECT COALESCE(SUM(price), 0) AS revenue FROM orders")
-    revenue = cur.fetchone()["revenue"]
-
-    cur.close(); db.close()
+    db.close()
     return jsonify({
         "totalOrders":  total,
         "todayOrders":  today_count,
@@ -286,52 +240,39 @@ def get_stats():
     })
 
 
-# ══════════════════════════════════════════
-# 🗺️ التتبع
-# ══════════════════════════════════════════
-DEFAULT_STEPS = [
-    {"id": i+1, "status": "pending", "date": None}
-    for i in range(16)
-]
+# ══ التتبع ══
+DEFAULT_STEPS = [{"id": i+1, "status": "pending", "date": None} for i in range(16)]
 
 
 @app.route("/tracking", methods=["GET"])
 def get_all_tracking():
     db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("SELECT * FROM tracking ORDER BY updated_at DESC")
-    rows = cur.fetchall()
-    cur.close(); db.close()
+    rows = db.execute("SELECT * FROM tracking ORDER BY updated_at DESC").fetchall()
+    db.close()
+    result = []
     for r in rows:
-        if r.get("updated_at"):
-            r["updated_at"] = r["updated_at"].strftime("%Y-%m-%d %H:%M:%S")
-        if r.get("created_at"):
-            r["created_at"] = r["created_at"].strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(r.get("steps"), str):
-            try:
-                r["steps"] = json.loads(r["steps"])
-            except Exception:
-                r["steps"] = DEFAULT_STEPS
-    return jsonify(rows)
+        row = dict(r)
+        try:
+            row["steps"] = json.loads(row["steps"])
+        except Exception:
+            row["steps"] = DEFAULT_STEPS
+        result.append(row)
+    return jsonify(result)
 
 
 @app.route("/tracking/<path:property_no>", methods=["GET"])
 def get_tracking(property_no):
     db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("SELECT * FROM tracking WHERE property_no = %s", (property_no,))
-    row = cur.fetchone()
-    cur.close(); db.close()
+    row = db.execute("SELECT * FROM tracking WHERE property_no = ?", (property_no,)).fetchone()
+    db.close()
 
     if not row:
         return jsonify({"success": False, "message": "غير موجود"})
 
-    steps = row.get("steps", "[]")
-    if isinstance(steps, str):
-        try:
-            steps = json.loads(steps)
-        except Exception:
-            steps = DEFAULT_STEPS
+    try:
+        steps = json.loads(row["steps"])
+    except Exception:
+        steps = DEFAULT_STEPS
 
     return jsonify({"success": True, "steps": steps, "property_no": property_no})
 
@@ -341,16 +282,16 @@ def create_tracking():
     data = request.get_json()
     property_no = data.get("property_no", "").strip()
     steps = json.dumps(data.get("steps", DEFAULT_STEPS))
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     db = get_db()
-    cur = db.cursor()
-    cur.execute("""
-        INSERT INTO tracking (property_no, steps)
-        VALUES (%s, %s)
-        ON DUPLICATE KEY UPDATE steps = VALUES(steps)
-    """, (property_no, steps))
+    db.execute("""
+        INSERT INTO tracking (property_no, steps, created_at, updated_at)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(property_no) DO UPDATE SET steps=excluded.steps, updated_at=excluded.updated_at
+    """, (property_no, steps, now, now))
     db.commit()
-    cur.close(); db.close()
+    db.close()
     return jsonify({"success": True})
 
 
@@ -362,50 +303,46 @@ def update_step(property_no):
     step_date  = data.get("date", datetime.now().strftime("%Y-%m-%d"))
 
     db = get_db()
-    cur = db.cursor(dictionary=True)
-    cur.execute("SELECT steps FROM tracking WHERE property_no = %s", (property_no,))
-    row = cur.fetchone()
+    row = db.execute("SELECT steps FROM tracking WHERE property_no = ?", (property_no,)).fetchone()
 
     if not row:
-        cur.close(); db.close()
+        db.close()
         return jsonify({"success": False, "message": "المعاملة غير موجودة"})
 
-    steps = json.loads(row["steps"]) if isinstance(row["steps"], str) else row["steps"]
+    try:
+        steps = json.loads(row["steps"])
+    except Exception:
+        steps = DEFAULT_STEPS
 
-    # تحديث الخطوة
     for s in steps:
         if s["id"] == step_id:
             s["status"] = new_status
-            s["date"]   = step_date if new_status == "completed" else None
+            s["date"] = step_date if new_status == "completed" else None
 
-    # إذا اكتملت خطوة → التالية تصبح in-progress
     if new_status == "completed":
         for s in steps:
             if s["id"] == step_id + 1 and s["status"] == "pending":
                 s["status"] = "in-progress"
 
-    cur.execute(
-        "UPDATE tracking SET steps = %s WHERE property_no = %s",
-        (json.dumps(steps), property_no)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    db.execute(
+        "UPDATE tracking SET steps = ?, updated_at = ? WHERE property_no = ?",
+        (json.dumps(steps), now, property_no)
     )
     db.commit()
-    cur.close(); db.close()
+    db.close()
     return jsonify({"success": True, "steps": steps})
 
 
 @app.route("/tracking/<path:property_no>", methods=["DELETE"])
 def delete_tracking(property_no):
     db = get_db()
-    cur = db.cursor()
-    cur.execute("DELETE FROM tracking WHERE property_no = %s", (property_no,))
+    db.execute("DELETE FROM tracking WHERE property_no = ?", (property_no,))
     db.commit()
-    cur.close(); db.close()
+    db.close()
     return jsonify({"success": True})
 
 
-# ══════════════════════════════════════════
-# 🚀 تشغيل
-# ══════════════════════════════════════════
 init_db()
 
 if __name__ == "__main__":

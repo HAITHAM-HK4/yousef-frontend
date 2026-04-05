@@ -311,7 +311,7 @@ async function searchByProperty() {
         return;
     }
     try {
-        const res = await fetch('https://haithamhk.pythonanywhere.com/tracking/' + encodeURIComponent(val));
+        const res = await fetch('https://yousefakkdeh.pythonanywhere.com/tracking/' + encodeURIComponent(val));
         if (!res.ok) { alert('رقم العقار غير موجود'); return; }
         const data = await res.json();
         if (!data.success) { alert('رقم العقار غير موجود'); return; }

@@ -211,7 +211,7 @@ add-service-form {
 // ==============================
 async function updateStats() {
     try {
-        const res = await fetch('https://haithamhk.pythonanywhere.com/stats');
+        const res = await fetch('https://yousefakkdeh.pythonanywhere.com/stats');
         const data = await res.json();
         document.getElementById('totalOrders').innerText  = data.totalOrders;
         document.getElementById('todayOrders').innerText  = data.todayOrders;
@@ -227,7 +227,7 @@ async function updateStats() {
 // ==============================
 async function loadOrders() {
     try {
-     const res = await fetch('https://haithamhk.pythonanywhere.com/orders');
+     const res = await fetch('https://yousefakkdeh.pythonanywhere.com/orders');
         const orders = await res.json();
         const tbody = document.getElementById('ordersTable');
 
@@ -273,7 +273,7 @@ async function deleteOrder(id) {
         color: 'white'
     }).then(async r => {
         if (r.isConfirmed) {
-       const res = await fetch('https://haithamhk.pythonanywhere.com/orders/' + id, { method: 'DELETE' });
+       const res = await fetch('https://yousefakkdeh.pythonanywhere.com/orders/' + id, { method: 'DELETE' });
             const result = await res.json();
             if (result.success) {
                 loadOrders();
@@ -289,7 +289,7 @@ async function deleteOrder(id) {
 // ==============================
 async function loadServices() {
     try {
-const res = await fetch('https://haithamhk.pythonanywhere.com/services');
+const res = await fetch('https://yousefakkdeh.pythonanywhere.com/services');
         const services = await res.json();
         
         // حفظ نسخة احتياطية في متصفحك أنت
@@ -380,7 +380,7 @@ async function savePrice(id, type) {
     }
 
     // جلب القيم الحالية أولاً
-const res = await fetch('https://haithamhk.pythonanywhere.com/services');
+const res = await fetch('https://yousefakkdeh.pythonanywhere.com/services');
     const services = await res.json();
     const service = services.find(s => s.id === id);
     if (!service) return;
@@ -392,17 +392,17 @@ const res = await fetch('https://haithamhk.pythonanywhere.com/services');
         visible: service.visible
     };
 
-    await fetch('https://haithamhk.pythonanywhere.com/services/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    await fetch('https://yousefakkdeh.pythonanywhere.com/services/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     Swal.fire({ icon: 'success', title: 'تم حفظ السعر ✅', timer: 1200, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
 }
 
 async function toggleService(id, currentVisible) {
-const res = await fetch('https://haithamhk.pythonanywhere.com/stats');
+const res = await fetch('https://yousefakkdeh.pythonanywhere.com/stats');
     const services = await res.json();
     const service = services.find(s => s.id === id);
     if (!service) return;
 
-    await fetch('https://haithamhk.pythonanywhere.com/services/' + id, {
+    await fetch('https://yousefakkdeh.pythonanywhere.com/services/' + id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...service, visible: currentVisible ? 0 : 1 })
@@ -420,7 +420,7 @@ async function deleteService(id, name) {
         background: 'rgba(15,20,35,0.95)', color: 'white'
     }).then(async r => {
         if (r.isConfirmed) {
-           await fetch('https://haithamhk.pythonanywhere.com/services/' + id, { method: 'DELETE' });
+           await fetch('https://yousefakkdeh.pythonanywhere.com/services/' + id, { method: 'DELETE' });
             loadServices();
             Swal.fire({ icon: 'success', title: 'تم الحذف', timer: 1000, showConfirmButton: false, background: 'rgba(15,20,35,0.95)', color: 'white' });
         }
@@ -437,7 +437,7 @@ async function addService() {
         return;
     }
 
-  await fetch('https://haithamhk.pythonanywhere.com/services', {
+  await fetch('https://yousefakkdeh.pythonanywhere.com/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, price_normal: parseInt(price), price_urgent: parseInt(urgP) })
@@ -467,7 +467,7 @@ async function changePass() {
         return;
     }
 
-const res = await fetch('https://haithamhk.pythonanywhere.com/change-password', {
+const res = await fetch('https://yousefakkdeh.pythonanywhere.com/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oldPass: op, newPass: np })
@@ -549,7 +549,7 @@ loadServices();
     </div>
 
     <script>
-    const BACKEND_URL = 'https://haithamhk.pythonanywhere.com';
+    const BACKEND_URL = 'https://yousefakkdeh.pythonanywhere.com';
 
     const STEP_TITLES = [
         'تسجيل ديوان المالية','إيرادات المالية','دخل مقطوع','أرباح حقيقية',

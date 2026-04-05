@@ -451,7 +451,7 @@ async function sendToServer(method, transactionId) {
     var urgency     = sessionStorage.getItem('urgencyMode') || 'عادي 🕐';
 
     try {
-       await fetch('https://haithamhk.pythonanywhere.com/orders', {
+       await fetch('https://yousefakkdeh.pythonanywhere.com/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
