@@ -545,16 +545,21 @@ async function loadFromBackend(propNo) {
         const res  = await fetch(`${TRACK_BACKEND}/tracking/${encodeURIComponent(propNo)}`);
         const data = await res.json();
 
-        if (!data.found) {
-            const errEl = document.getElementById('searchError');
-            errEl.textContent = 'لم يتم العثور على معاملة بهذا الرقم';
-            errEl.style.display = 'block';
+        // 1. التحقق من وجود المعاملة (الباك إند عادة يرسل message في حال عدم وجودها)
+        if (!data || data.message || !data.steps) {
+            alert('❌ لم يتم العثور على معاملة برقم العقار: ' + propNo);
             return;
         }
 
         sessionStorage.setItem('trackingPropNo', propNo);
 
-        // حقن البيانات في trackingSteps
+        // 2. تصفير كل المراحل (مهم جداً حتى لا تتداخل معاملات الزبائن مع بعضها عند البحث المتكرر)
+        trackingSteps.forEach(s => {
+            s.status = 'pending';
+            s.date = null;
+        });
+
+        // 3. حقن البيانات القادمة من قاعدة البيانات SQLite
         const backendSteps = data.steps;
         backendSteps.forEach(bs => {
             const found = trackingSteps.find(s => s.id === bs.id);
@@ -564,16 +569,17 @@ async function loadFromBackend(propNo) {
             }
         });
 
+        // 4. تحديث الواجهة
         renderTimeline();
         updateProgress();
 
-        // تحديث العنوان
+        // تحديث العنوان ليظهر رقم العقار
         const lastUpdate = document.getElementById('lastUpdateText');
         if (lastUpdate) lastUpdate.textContent = `رقم العقار: ${propNo}`;
 
     } catch(e) {
-        const errEl = document.getElementById('searchError');
-        if (errEl) { errEl.textContent = 'خطأ في الاتصال بالسيرفر'; errEl.style.display = 'block'; }
+        console.error("Error connecting to backend:", e);
+        alert('⚠️ خطأ في الاتصال بالسيرفر. يرجى المحاولة لاحقاً.');
     }
 }
 </script>

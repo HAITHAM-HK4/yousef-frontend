@@ -1,9 +1,10 @@
 // ========================================
 // 🗺️ نظام تتبع المعاملات - tracking.js
-// ✨ Premium Edition - مُدمج مع الميزات الاحترافية
+// ✨ Premium Edition - مُدمج مع الميزات الاحترافية (محدث ومُتوافق مع الباك إند)
 // ========================================
 
 // المراحل الـ 16 للمعاملة
+// تم جعل الحالة الافتراضية pending لتجنب تداخل البيانات قبل التحميل من السيرفر
 const trackingSteps = [
     {
         id: 1,
@@ -11,8 +12,8 @@ const trackingSteps = [
         description: 'تسجيل المعاملة في السجلات الرسمية لديوان المالية',
         tooltip: 'أول خطوة رسمية — يتم تسجيل ملف المعاملة في الديوان',
         icon: '📝',
-        status: 'completed',
-        date: '2026-02-20'
+        status: 'pending',
+        date: null
     },
     {
         id: 2,
@@ -20,8 +21,8 @@ const trackingSteps = [
         description: 'مراجعة وتدقيق الإيرادات المالية المتعلقة بالمعاملة',
         tooltip: 'مراجعة الأرقام المالية والتحقق من صحتها',
         icon: '💰',
-        status: 'completed',
-        date: '2026-02-21'
+        status: 'pending',
+        date: null
     },
     {
         id: 3,
@@ -29,8 +30,8 @@ const trackingSteps = [
         description: 'احتساب وتحديد الدخل المقطوع للمعاملة',
         tooltip: 'تحديد الضريبة المقطوعة على الدخل الناتج',
         icon: '📊',
-        status: 'completed',
-        date: '2026-02-22'
+        status: 'pending',
+        date: null
     },
     {
         id: 4,
@@ -38,8 +39,8 @@ const trackingSteps = [
         description: 'تقييم ومراجعة الأرباح الحقيقية من المعاملة',
         tooltip: 'تقييم صافي الأرباح بعد خصم التكاليف',
         icon: '💹',
-        status: 'completed',
-        date: '2026-02-23'
+        status: 'pending',
+        date: null
     },
     {
         id: 5,
@@ -47,7 +48,7 @@ const trackingSteps = [
         description: 'التحقق من عدم وجود قيود على التصرف بالعقار',
         tooltip: 'جارٍ التحقق من خلو العقار من أي حجز أو قيد قانوني',
         icon: '🔒',
-        status: 'in-progress',
+        status: 'pending',
         date: null
     },
     {
@@ -151,35 +152,26 @@ const trackingSteps = [
     }
 ];
 
-// ── تحميل البيانات عند فتح الصفحة ──
+// ── تحميل البيانات الأساسية عند فتح الصفحة ──
 window.addEventListener('DOMContentLoaded', function () {
-    // استرجاع الخطوات المحفوظة إن وجدت
-    const saved = sessionStorage.getItem('trackingSteps');
-    if (saved) {
-        try {
-            const parsed = JSON.parse(saved);
-            parsed.forEach(s => {
-                const found = trackingSteps.find(x => x.id === s.id);
-                if (found) { found.status = s.status; found.date = s.date; }
-            });
-        } catch (e) { /* ignore */ }
-    }
-
+    // تم إزالة كود الـ localStorage لكي يتم الاعتماد كلياً على الباك إند عبر tracking.html
     loadCustomerInfo();
     renderTimeline();
     updateProgress();
 });
 
-// ── تحميل معلومات العميل ──
+// ── تحميل معلومات العميل (بيانات تجميلية للعميل) ──
 function loadCustomerInfo() {
-    const customerName = sessionStorage.getItem('customerName') || 'العميل';
-    const serviceType  = sessionStorage.getItem('serviceType')  || 'بيان قيد';
-    const txnId        = sessionStorage.getItem('txnId')        || '#TXN-2026-0142';
+    const customerName = localStorage.getItem('customerName') || 'العميل';
+    const serviceType  = localStorage.getItem('serviceType')  || 'معاملة عقارية';
+    const txnId        = localStorage.getItem('txnId')        || '#TXN-' + new Date().getFullYear() + '-000';
 
-    document.getElementById('customerName').textContent = customerName;
-    document.getElementById('serviceType').textContent  = serviceType;
-
+    const nameEl = document.getElementById('customerName');
+    const serviceEl = document.getElementById('serviceType');
     const txnEl = document.getElementById('txnId');
+
+    if (nameEl) nameEl.textContent = customerName;
+    if (serviceEl) serviceEl.textContent  = serviceType;
     if (txnEl) txnEl.textContent = txnId;
 }
 
@@ -233,14 +225,21 @@ function updateProgress() {
     if (typeof window.updateProgressUI === 'function') {
         window.updateProgressUI(completed, total);
     } else {
-        // fallback بسيط لو الـ HTML القديم
-        const pct = Math.round((completed / total) * 100);
-        document.getElementById('completedSteps').textContent = completed;
-        document.getElementById('totalSteps').textContent     = total;
-        document.getElementById('progressPercentage').textContent = pct + '%';
-        setTimeout(() => {
-            document.getElementById('progressBar').style.width = pct + '%';
-        }, 500);
+        // fallback بسيط لو حدث خطأ في الـ HTML
+        const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+        const completedEl = document.getElementById('completedSteps');
+        const totalEl = document.getElementById('totalSteps');
+        const pctEl = document.getElementById('progressPercentage');
+        const barEl = document.getElementById('progressBar');
+
+        if (completedEl) completedEl.textContent = completed;
+        if (totalEl) totalEl.textContent = total;
+        if (pctEl) pctEl.textContent = pct + '%';
+        if (barEl) {
+            setTimeout(() => {
+                barEl.style.width = pct + '%';
+            }, 500);
+        }
     }
 }
 
@@ -253,38 +252,7 @@ function formatDate(dateString) {
     });
 }
 
-// ── للأدمن: تحديث حالة مرحلة ──
-function updateStepStatus(stepId, newStatus, date = null) {
-    const step = trackingSteps.find(s => s.id === stepId);
-    if (!step) return;
-
-    const prev = step.status;
-    step.status = newStatus;
-    if (date) step.date = date;
-
-    renderTimeline();
-    updateProgress();
-
-    // حفظ في localStorage
-    sessionStorage.setItem('trackingSteps', JSON.stringify(
-        trackingSteps.map(({ id, status, date }) => ({ id, status, date }))
-    ));
-
-    // Toast إشعار عند تغيير الحالة
-    if (typeof window.showToast === 'function') {
-        const labels = {
-            'completed':   '✅ تم إكمال المرحلة',
-            'in-progress': '⚡ المرحلة قيد التنفيذ الآن',
-            'pending':     '⏳ المرحلة في الانتظار'
-        };
-        window.showToast(labels[newStatus] || 'تم تحديث الحالة');
-    }
-
-    // تسجيل في console للمتابعة
-    console.log(`[تتبع] المرحلة ${stepId} تغيرت: ${prev} → ${newStatus}`);
-}
-
-// ── ملاحظة إدارية ──
+// ── ملاحظة إدارية (اختيارية) ──
 function showAdminNote(message) {
     const noteEl   = document.getElementById('adminNote');
     const noteText = document.getElementById('noteText');
@@ -299,46 +267,3 @@ function hideAdminNote() {
     const noteEl = document.getElementById('adminNote');
     if (noteEl) noteEl.style.display = 'none';
 }
-async function searchByProperty() {
-    const val = document.getElementById('propertySearch').value.trim();
-    if (!val) {
-        alert('يرجى إدخال رقم العقار');
-        return;
-    }
-    const regex = /^[0-9]+(\/[0-9]+)?$/;
-    if (!regex.test(val)) {
-        alert('رقم العقار يجب أن يكون أرقاماً فقط مثل 345 أو 345/2');
-        return;
-    }
-    try {
-        const res = await fetch('https://yousefakkdeh.pythonanywhere.com/tracking/' + encodeURIComponent(val));
-        if (!res.ok) { alert('رقم العقار غير موجود'); return; }
-        const data = await res.json();
-        if (!data.success) { alert('رقم العقار غير موجود'); return; }
-        // تحديث الخطوات من الباك إند
-        const steps = typeof data.steps === 'string' ? JSON.parse(data.steps) : data.steps;
-        if (Array.isArray(steps)) {
-            steps.forEach(s => {
-                const found = trackingSteps.find(x => x.id === s.id);
-                if (found) { found.status = s.status; found.date = s.date || null; }
-            });
-        }
-        renderTimeline();
-        updateProgress();
-    } catch(e) {
-        alert('خطأ في الاتصال بالسيرفر');
-    }
-}
-    const regex = /^[0-9]+(\/[0-9]+)?$/;
-    if (!regex.test(val)) {
-        alert('رقم العقار يجب أن يكون أرقاماً فقط مثل 345 أو 345/2');
-        return;
-    }
-    // هنا لاحقاً نربطه بالباك إند
-    alert('جاري البحث عن العقار: ' + val);
-}
-
-// ── مثال للاستخدام (احذف عند التشغيل الفعلي) ──
-// updateStepStatus(5, 'completed', '2026-02-28');
-// updateStepStatus(6, 'in-progress');
-// showAdminNote('المعاملة تسير بشكل طبيعي. سيتم إشعارك عند اكتمال المرحلة التالية.');
